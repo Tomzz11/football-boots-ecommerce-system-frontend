@@ -3,7 +3,10 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss(),],
+  plugins: [react(), tailwindcss({
+      config: './tailwind.config.js',
+    }),
+  ],
   resolve: {
     alias: {
       '@': new URL('./src', import.meta.url).pathname,
