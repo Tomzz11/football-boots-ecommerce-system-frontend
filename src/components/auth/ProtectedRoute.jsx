@@ -1,6 +1,5 @@
-
 import { Navigate, useLocation } from 'react-router-dom';
-import useAuthStore from '../stores/authStore';
+import useAuthStore from "../../stores/authStore";
 import { PageLoading } from '../components/ui/Loading';
 
 // For authenticated users only
