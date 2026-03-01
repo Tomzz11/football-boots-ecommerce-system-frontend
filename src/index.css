@@ -1,5 +1,32 @@
 @import "tailwindcss";
 
+@theme {
+  /* Fonts */
+  --font-sans: 'Prompt', sans-serif;
+  --font-display: 'Kanit', sans-serif;
+
+  /* Colors */
+  --color-primary-50: #f0fdf4;
+  --color-primary-100: #dcfce7;
+  --color-primary-200: #bbf7d0;
+  --color-primary-300: #86efac;
+  --color-primary-400: #4ade80;
+  --color-primary-500: #22c55e;
+  --color-primary-600: #16a34a;
+  --color-primary-700: #15803d;
+  --color-primary-800: #166534;
+  --color-primary-900: #14532d;
+
+  /* Field Colors */
+  --color-field-light: #4ade80;
+  --color-field: #22c55e;
+  --color-field-dark: #15803d;
+
+  /* Accent Colors */
+  --color-accent-orange: #f97316;
+  --color-accent-blue: #3b82f6;
+  --color-accent-gold: #eab308;
+}
 
 /* ==========================================
    Custom Base Styles
@@ -10,11 +37,13 @@
   }
   
   body {
-    @apply font-sans text-gray-800 bg-gray-50 antialiased;
+    font-family: var(--font-sans);
+    @apply text-gray-800 bg-gray-50 antialiased;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display font-semibold;
+    font-family: var(--font-display);
+    @apply font-semibold;
   }
 }
 
@@ -22,7 +51,6 @@
    Custom Components
    ========================================== */
 @layer components {
-  /* Buttons */
   .btn {
     @apply inline-flex items-center justify-center gap-2 px-6 py-3 
            font-medium rounded-lg transition-all duration-200
@@ -50,7 +78,6 @@
            focus:ring-red-500;
   }
   
-  /* Inputs */
   .input {
     @apply w-full px-4 py-3 border border-gray-300 rounded-lg
            focus:outline-none focus:ring-2 focus:ring-primary-500 
@@ -59,52 +86,47 @@
   }
   
   .input-error {
-    @apply input border-red-500 focus:ring-red-500;
+    @apply border-red-500 focus:ring-red-500;
   }
   
-  /* Cards */
   .card {
     @apply bg-white rounded-2xl shadow-lg overflow-hidden 
            transition-all duration-300 hover:shadow-xl;
   }
   
   .card-hover {
-    @apply card hover:-translate-y-2;
+    @apply hover:-translate-y-2;
   }
   
-  /* Badges */
   .badge {
     @apply inline-flex items-center px-3 py-1 text-sm font-medium 
            rounded-full;
   }
   
   .badge-success {
-    @apply badge bg-green-100 text-green-800;
+    @apply bg-green-100 text-green-800;
   }
   
   .badge-warning {
-    @apply badge bg-yellow-100 text-yellow-800;
+    @apply bg-yellow-100 text-yellow-800;
   }
   
   .badge-danger {
-    @apply badge bg-red-100 text-red-800;
+    @apply bg-red-100 text-red-800;
   }
   
   .badge-info {
-    @apply badge bg-blue-100 text-blue-800;
+    @apply bg-blue-100 text-blue-800;
   }
   
-  /* Container */
   .container-custom {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
   }
   
-  /* Section */
   .section {
     @apply py-16 md:py-24;
   }
   
-  /* Product Grid */
   .product-grid {
     @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
   }
@@ -151,7 +173,6 @@
   }
 }
 
-/* Staggered animation delays */
 .stagger-1 { animation-delay: 0.1s; }
 .stagger-2 { animation-delay: 0.2s; }
 .stagger-3 { animation-delay: 0.3s; }
