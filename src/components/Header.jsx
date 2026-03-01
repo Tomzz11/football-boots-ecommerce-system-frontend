@@ -12,29 +12,48 @@ import {
   Settings
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-// 
+import useAuthStore from '../../stores/authStore';
+import useCartStore from '../../stores/cartStore';
+import { cn } from '../../lib/utils';
+import { BRANDS } from '../../lib/constants';
 
 export default function Header() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-    const [searchQuery, setSearchQuery] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
-    // 
+  const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuthStore();
+  const { items, openCart } = useCartStore();
+  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
+      setIsSearchOpen(false);
+      setSearchQuery('');
+    }
+  };
 
+  const handleLogout = () => {
+    logout();
+    setIsUserMenuOpen(false);
+    navigate('/');
+  };
 
-    return (
-        <header className="sticky top-0 z-50 bg-white shadow-sm">
-        {/* Top Bar */}    
-        <div className="bg-primary-600 text-white text-sm py-2">
+  return (
+    <header className="sticky top-0 z-50 bg-white shadow-sm">
+      {/* Top Bar */}
+      <div className="bg-primary-600 text-white text-sm py-2">
         <div className="container-custom flex justify-between items-center">
           <p>🚚 ส่งฟรี! เมื่อสั่งซื้อครบ ฿2,000</p>
-          <p className="hidden sm:block">📞 โทร: 02-999-0000</p>
+          <p className="hidden sm:block">📞 โทร: 02-xxx-xxxx</p>
         </div>
       </div>
 
-        {/* Main Header */}
+      {/* Main Header */}
       <div className="container-custom">
         <div className="flex items-center justify-between h-16 lg:h-20">
           {/* Mobile Menu Button */}
@@ -315,6 +334,8 @@ export default function Header() {
         )}
       </AnimatePresence>
     </header>
-    );
+  );
 }
+
+
 
