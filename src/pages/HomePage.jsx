@@ -1,11 +1,11 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Truck, Shield, CreditCard, Headphones } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useFeaturedProducts, useNewArrivals } from '../../hooks/useProducts';
-import ProductCard from '../../components/product/ProductCard';
-import { ProductGridSkeleton } from '../../components/ui/Loading';
-import Button from '../../components/ui/Button';
-import { BRANDS } from '../../lib/constants';
+import { useFeaturedProducts, useNewArrivals } from '../hooks/useProducts';
+import ProductCard from '../components/product/ProductCard';
+import { ProductGridSkeleton } from '../components/ui/Loading';
+import Button from '../components/ui/Button';
+import { BRANDS } from '../lib/constants';
 
 export default function HomePage() {
   const { data: featuredProducts, isLoading: loadingFeatured } = useFeaturedProducts(8);
