@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Filter, X, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useProducts } from '../../hooks/useProducts';
-import ProductCard from '../../components/product/ProductCard';
-import { ProductGridSkeleton } from '../../components/ui/Loading';
-import Button from '../../components/ui/Button';
-import { BRANDS, STUD_TYPES, CATEGORIES, SORT_OPTIONS, PRICE_RANGES } from '../../lib/constants';
+import { useProducts } from '../hooks/useProducts';
+import ProductCard from '../components/product/ProductCard';
+import { ProductGridSkeleton } from '../components/ui/Loading';
+import Button from '../components/ui/Button';
+import { BRANDS, STUD_TYPES, CATEGORIES, SORT_OPTIONS, PRICE_RANGES } from '../lib/constants';
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
