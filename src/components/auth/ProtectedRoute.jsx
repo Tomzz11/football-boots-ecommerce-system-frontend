@@ -1,6 +1,6 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import useAuthStore from "../../stores/authStore";
-import { PageLoading } from '../components/ui/Loading';
+import { PageLoading } from '../ui/Loading';
 
 // For authenticated users only
 export function ProtectedRoute({ children }) {
