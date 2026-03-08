@@ -8,6 +8,7 @@ import { ProtectedRoute, AdminRoute, GuestRoute } from './components/auth/Protec
 const HomePage = lazy(() => import('./pages/HomePage'));
 const ProductsPage = lazy(() => import('./pages/ProductsPage'));
 const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
+const GradeShowcasePage = lazy(() => import('./pages/GradeShowcasePage'));
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 
@@ -50,6 +51,7 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
+          <Route path="/grades" element={<GradeShowcasePage />} />
           
           {/* Protected routes */}
           <Route

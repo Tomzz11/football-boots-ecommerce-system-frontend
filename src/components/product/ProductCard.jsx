@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Heart, ShoppingCart, Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn, formatPrice, getProductImage, isInStock, getSizeRange } from '../../lib/utils';
+import GradeBadge from './GradeBadge';
 
 export default function ProductCard({ product, index = 0 }) {
   const {
@@ -9,6 +10,7 @@ export default function ProductCard({ product, index = 0 }) {
     slug,
     name,
     brand,
+    grade,
     price,
     comparePrice,
     images,
@@ -109,9 +111,12 @@ export default function ProductCard({ product, index = 0 }) {
           {/* Product Info */}
           <div className="p-4">
             {/* Brand */}
+            <div className="flex items-center gap-2 mt-1">
             <p className="text-xs font-semibold text-primary-600 uppercase tracking-wider">
               {brand}
             </p>
+              <GradeBadge grade={grade} />
+            </div>
 
             {/* Name */}
             <h3 className="mt-1 font-medium text-gray-800 line-clamp-2 group-hover:text-primary-600 transition-colors">

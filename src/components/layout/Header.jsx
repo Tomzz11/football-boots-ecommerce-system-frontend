@@ -82,6 +82,12 @@ export default function Header() {
             >
               สินค้าทั้งหมด
             </Link>
+            <Link 
+              to="/grades" 
+              className="font-medium text-gray-700 hover:text-primary-600 transition-colors"
+            >
+              เกรดรองเท้า
+            </Link>
             
             {/* Brands Dropdown */}
             <div className="relative group">
@@ -261,6 +267,13 @@ export default function Header() {
                   className="block px-4 py-3 rounded-lg hover:bg-gray-100"
                 >
                   สินค้าทั้งหมด
+                </Link>
+                <Link
+                  to="/grades"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block px-4 py-3 rounded-lg hover:bg-gray-100"
+                >
+                  เกรดรองเท้า
                 </Link>
                 
                 <div className="px-4 py-2 text-sm font-semibold text-gray-500 uppercase">
