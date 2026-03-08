@@ -12,6 +12,7 @@ export const productKeys = {
     featured: () => [...productKeys.all, 'featured'],
     newArrivals: () => [...productKeys.all, 'new-arrivals'],
     related: (id) => [...productKeys.all, 'related', id],
+    grade: (grade) => [...productKeys.all, 'grade', grade],  
 };
 
 /**
@@ -42,6 +43,21 @@ export function useProduct(id) {
     enabled: !!id,
   });
 }
+
+/**
+ * Get products by grade
+ */
+export function useProductsByGrade(grade, limit = 8) {
+  return useQuery({
+    queryKey: productKeys.grade(grade),
+    queryFn: async () => {
+      const response = await api.get(`/products/grade/${grade}?limit=${limit}`);
+      return response.data.products;
+    },
+    enabled: !!grade,
+  });
+}
+
 
 /**
  * Get featured products

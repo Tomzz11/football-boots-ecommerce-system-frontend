@@ -11,6 +11,7 @@ import ProductCard from '../../components/product/ProductCard';
 import Button from '../../components/ui/Button';
 import { SectionLoading, ProductGridSkeleton } from '../../components/ui/Loading';
 import { formatPrice, cn } from '../../lib/utils';
+import GradeBadge from '../components/product/GradeBadge';
 
 export default function ProductDetailPage() {
   const { id } = useParams();
@@ -38,6 +39,7 @@ export default function ProductDetailPage() {
   const {
     name,
     brand,
+    grade,
     price,
     comparePrice,
     description,
@@ -187,6 +189,7 @@ export default function ProductDetailPage() {
 
             {/* Tags */}
             <div className="flex gap-2 mt-4">
+              <GradeBadge grade={grade} size="md" />
               <span className="badge badge-info">{studType}</span>
               <span className="badge badge-success">{category}</span>
             </div>
