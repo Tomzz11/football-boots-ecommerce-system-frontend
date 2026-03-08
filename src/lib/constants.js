@@ -1,38 +1,17 @@
 // Brand options
 export const BRANDS = [
-  { value: 'Nike', label: 'Nike' },
-  { value: 'Adidas', label: 'Adidas' },
-  { value: 'Puma', label: 'Puma' },
-  { value: 'Mizuno', label: 'Mizuno' },
+  { value: 'Apex', label: 'Apex' },
+  { value: 'Titan', label: 'Titan' },
+  { value: 'Raptor', label: 'Raptor' },
+  { value: 'Kansei', label: 'Kansei' },
 ];
 
 // Stud types
 export const STUD_TYPES = [
-  { 
-    value: 'FG', 
-    label: 'FG (Firm Ground)', 
-    description: 'สนามหญ้าธรรมชาติ' 
-  },
-  { 
-    value: 'FG/AG', 
-    label: 'FG/AG (Firm Ground/Artificial Ground)', 
-    description: 'สนามหญ้าธรรมชาติ และหญ้าเทียม' 
-  },
-  { 
-    value: 'AG', 
-    label: 'AG (Artificial Ground)', 
-    description: 'สนามหญ้าเทียม' 
-  },
-  { 
-    value: 'HG', 
-    label: 'HG (Hard Ground)', 
-    description: 'สนามแข็ง/ดิน/หญ้าบาง' 
-  },
-  { 
-    value: 'HG/AG', 
-    label: 'HG/AG (Hard Ground/Artificial Grass)', 
-    description: 'สนามแข็ง/ดิน/หญ้าบาง และหญ้าเทียม' 
-  },
+  { value: 'FG', label: 'FG (Firm Ground)', description: 'สนามหญ้าธรรมชาติ' },
+  { value: 'AG', label: 'AG (Artificial Ground)', description: 'สนามหญ้าเทียม' },
+  { value: 'HG', label: 'HG (Hard Ground)', description: 'สนามแข็ง/ดิน' },
+  { value: 'SG', label: 'SG (Soft Ground)', description: 'สนามหญ้าเปียก/นุ่ม' },
 ];
 
 // Categories

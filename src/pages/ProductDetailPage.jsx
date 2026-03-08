@@ -194,7 +194,7 @@ export default function ProductDetailPage() {
             {/* Size Selection */}
             <div className="mt-8">
               <div className="flex items-center justify-between mb-3">
-                <span className="font-medium text-gray-800">เลือกไซส์ (EU)</span>
+                <span className="font-medium text-gray-800">เลือกไซส์ (CM)</span>
                 <Link to="/help/size-guide" className="text-sm text-primary-600 hover:underline">
                   คู่มือไซส์
                 </Link>

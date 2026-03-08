@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import api from '../lib/axios';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 
 const useAuthStore = create(
     persist(
@@ -57,7 +57,7 @@ const useAuthStore = create(
                     return { success: true }
                 } catch (error) {
                     set({ isLoading: false });
-                    const message = error.response?.date?.message || 'เข้าสู่ระบบไม่สำเร็จ';
+                    const message = error.response?.data?.message || 'เข้าสู่ระบบไม่สำเร็จ';
                     toast.error(message);
                     return { success: false, error: message };
                 }
@@ -112,7 +112,7 @@ const useAuthStore = create(
                     if (response.data.token) {
                         get().setToken(response.data.token);
                     }
-                    set({ isLoading: true });
+                    set({ isLoading: false });
                     toast.success('เปลี่ยนรหัสผ่านสำเร็จ');
                     return { success: true };
                 } catch (error) {
