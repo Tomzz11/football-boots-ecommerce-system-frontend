@@ -27,8 +27,6 @@ api.interceptors.response.use(
         return response.data;
     },
     (error) => {
-        const message = error.response?.data?.message || `เกิดข้อผิดพลาด กรุณาลองใหม่`;
-
         if (error.response?.status === 401) {
             localStorage.removeItem('token');
             localStorage.removeItem('user');
@@ -37,12 +35,6 @@ api.interceptors.response.use(
                 toast.error('กรุณาเข้าสู่ระบบใหม่');
                 window.location.href = '/login';
             }
-        } else if (error.response?.status === 403) {
-            toast.error('คุณไม่มีสิทธิ์เข้าถึง');
-        } else if (error.response?.status === 404) {
-            toast.error('ไม่พบข้อมูล');
-        } else if (error.response?.status === 500) {
-            toast.error('เซิร์ฟเวอร์มีปัญหา กรุณาลองใหม่ภายหลัง');
         }
         return Promise.reject(error);
     }

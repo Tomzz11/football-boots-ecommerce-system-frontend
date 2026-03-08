@@ -28,8 +28,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-gray-400 mb-6">
-              ร้านขายรองเท้าสตั๊ดคุณภาพ จำหน่ายแบรนด์ชั้นนำ 
-              Nike, Adidas, Puma, Mizuno ของแท้ 100%
+              ร้านขายรองเท้าสตั๊ดคุณภาพ จำหน่ายแบรนด์ชั้นนำ Apex, Titan, Raptor, Kansei ของแท้ 100%
             </p>
             
             {/* Social Links */}
@@ -73,23 +72,23 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/products?brand=Nike" className="hover:text-primary-400 transition-colors">
-                  Nike
+                <Link to="/products?brand=Apex" className="hover:text-primary-400 transition-colors">
+                  Apex
                 </Link>
               </li>
               <li>
-                <Link to="/products?brand=Adidas" className="hover:text-primary-400 transition-colors">
-                  Adidas
+                <Link to="/products?brand=Titan" className="hover:text-primary-400 transition-colors">
+                  Titan
                 </Link>
               </li>
               <li>
-                <Link to="/products?brand=Puma" className="hover:text-primary-400 transition-colors">
-                  Puma
+                <Link to="/products?brand=Raptor" className="hover:text-primary-400 transition-colors">
+                  Raptor
                 </Link>
               </li>
               <li>
-                <Link to="/products?brand=Mizuno" className="hover:text-primary-400 transition-colors">
-                  Mizuno
+                <Link to="/products?brand=Kansei" className="hover:text-primary-400 transition-colors">
+                  Kansei
                 </Link>
               </li>
             </ul>
