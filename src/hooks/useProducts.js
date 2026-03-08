@@ -6,7 +6,7 @@ import api from '../lib/axios';
 export const productKeys = {
     all: ['products'],
     lists: () => [...productKeys.all, 'list'],
-    list: (filters) => [...productKeys.list(), filters],
+    list: (filters) => [...productKeys.lists(), filters],
     details: () => [...productKeys.all, 'detail'],
     detail: (id) => [...productKeys.details(), id],
     featured: () => [...productKeys.all, 'featured'],

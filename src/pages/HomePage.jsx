@@ -33,8 +33,8 @@ export default function HomePage() {
               </h1>
               
               <p className="text-lg text-gray-300 mb-8 max-w-lg">
-                เลือกสรรรองเท้าสตั๊ดคุณภาพจากแบรนด์ชั้นนำ Nike, Adidas, Puma 
-                ของแท้ 100% พร้อมรับประกันคุณภาพ
+                เลือกสรรรองเท้าสตั๊ดคุณภาพจากแบรนด์ชั้นนำ Apex, Titan, Raptor, Kansei
+                พร้อมรับประกันคุณภาพ
               </p>
               
               <div className="flex flex-wrap gap-4">
@@ -58,7 +58,7 @@ export default function HomePage() {
               className="relative hidden lg:block"
             >
               <img
-                src="https://images.unsplash.com/photo-1511886929837-354d827aae26?w=600"
+                src="https://images.unsplash.com/photo-1556056504-5c7696c4c28d?q=80&w=976&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 alt="Football Cleats"
                 className="w-full max-w-lg mx-auto drop-shadow-2xl rounded-2xl"
               />

@@ -21,8 +21,8 @@ export default function ProductsPage() {
     studType: searchParams.get('studType') || '',
     category: searchParams.get('category') || '',
     sort: searchParams.get('sort') || '-createdAt',
-    'price[gte]': searchParams.get('priceMin') || '',
-    'price[lte]': searchParams.get('priceMax') || '',
+    'minPrice': searchParams.get('priceMin') || '',
+    'maxPrice': searchParams.get('priceMax') || '',
   };
 
   // Remove empty filters
