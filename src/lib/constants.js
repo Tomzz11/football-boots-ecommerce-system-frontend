@@ -6,6 +6,35 @@ export const BRANDS = [
   { value: 'Kansei', label: 'Kansei' },
 ];
 
+// Grades 
+export const GRADES = [
+  { 
+    value: 'Elite', 
+    label: 'Elite', 
+    description: 'รุ่นท็อปสุด เทคโนโลยีสูงสุด',
+    color: 'amber'
+  },
+  { 
+    value: 'Pro', 
+    label: 'Pro', 
+    description: 'รุ่นรองท็อป คุ้มค่าสูง',
+    color: 'purple'
+  },
+  { 
+    value: 'Academy', 
+    label: 'Academy', 
+    description: 'รุ่นฝึกซ้อม ทนทาน',
+    color: 'blue'
+  },
+  { 
+    value: 'Club', 
+    label: 'Club', 
+    description: 'รุ่นเริ่มต้น ราคาประหยัด',
+    color: 'green'
+  },
+];
+
+
 // Stud types
 export const STUD_TYPES = [
   { value: 'FG', label: 'FG (Firm Ground)', description: 'สนามหญ้าธรรมชาติ' },

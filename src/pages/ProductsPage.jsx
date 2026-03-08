@@ -6,7 +6,7 @@ import { useProducts } from '../hooks/useProducts';
 import ProductCard from '../components/product/ProductCard';
 import { ProductGridSkeleton } from '../components/ui/Loading';
 import Button from '../components/ui/Button';
-import { BRANDS, STUD_TYPES, CATEGORIES, SORT_OPTIONS, PRICE_RANGES } from '../lib/constants';
+import { BRANDS, GRADES, STUD_TYPES, CATEGORIES, SORT_OPTIONS, PRICE_RANGES } from '../lib/constants';
 
 export default function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -18,6 +18,7 @@ export default function ProductsPage() {
     limit: 12,
     search: searchParams.get('search') || '',
     brand: searchParams.get('brand') || '',
+    grade: searchParams.get('grade') || '',
     studType: searchParams.get('studType') || '',
     category: searchParams.get('category') || '',
     sort: searchParams.get('sort') || '-createdAt',
@@ -54,6 +55,7 @@ export default function ProductsPage() {
     searchParams.get('brand'),
     searchParams.get('studType'),
     searchParams.get('category'),
+    searchParams.get('grade'),
     searchParams.get('priceMin'),
   ].filter(Boolean).length;
 
@@ -109,6 +111,24 @@ export default function ProductsPage() {
                     <span className="text-gray-700">{brand.label}</span>
                   </label>
                 ))}
+              </FilterSection>
+
+              {/* Grade Filter */}
+              <FilterSection title="เกรด">
+                {GRADES.map((grade) => (
+                <label key={grade.value} className="flex items-center gap-2 py-1 cursor-pointer">
+                  <input
+                      type="radio"
+                      name="grade"
+                      checked={searchParams.get('grade') === grade.value}
+                      onChange={() => updateFilter('grade',
+                      searchParams.get('grade') === grade.value ? '' : grade.value
+                    )}
+                    className="text-primary-600 focus:ring-primary-500"
+                  />
+                <span className="text-gray-700">{grade.label}</span>
+                </label>
+                  ))}
               </FilterSection>
 
               {/* Stud Type Filter */}
@@ -218,6 +238,12 @@ export default function ProductsPage() {
                   <FilterTag 
                     label={`แบรนด์: ${searchParams.get('brand')}`}
                     onRemove={() => updateFilter('brand', '')}
+                  />
+                )}
+                {searchParams.get('grade') && (
+                  <FilterTag 
+                    label={`เกรด: ${searchParams.get('grade')}`}
+                    onRemove={() => updateFilter('grade', '')}
                   />
                 )}
                 {searchParams.get('studType') && (
