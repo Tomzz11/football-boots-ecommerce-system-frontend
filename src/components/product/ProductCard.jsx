@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Heart, ShoppingCart, Star } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn, formatPrice, getProductImage, isInStock, getSizeRange } from '../../lib/utils';
 import GradeBadge from './GradeBadge';
@@ -71,41 +71,6 @@ export default function ProductCard({ product, index = 0 }) {
                 </span>
               )}
             </div>
-
-            {/* Quick Actions */}
-            <div className={cn(
-              'absolute top-3 right-3 flex flex-col gap-2',
-              'opacity-0 group-hover:opacity-100 transition-opacity duration-300'
-            )}>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  // TODO: Add to wishlist
-                }}
-                className="w-9 h-9 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-red-50 hover:text-red-500 transition-colors"
-              >
-                <Heart className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Add to Cart Overlay */}
-            {inStock && (
-              <div className={cn(
-                'absolute inset-x-0 bottom-0 p-4',
-                'translate-y-full group-hover:translate-y-0 transition-transform duration-300'
-              )}>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    // TODO: Quick add modal
-                  }}
-                  className="w-full bg-primary-600 text-white py-2.5 rounded-lg font-medium flex items-center justify-center gap-2 hover:bg-primary-700 transition-colors"
-                >
-                  <ShoppingCart className="w-4 h-4" />
-                  เลือกไซส์
-                </button>
-              </div>
-            )}
           </div>
 
           {/* Product Info */}
@@ -125,7 +90,7 @@ export default function ProductCard({ product, index = 0 }) {
 
             {/* Size Range */}
             <p className="mt-1 text-sm text-gray-500">
-              ไซส์: {sizeRange}
+              ปุ่ม: {product.studType}
             </p>
 
             {/* Rating */}

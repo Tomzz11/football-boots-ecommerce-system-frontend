@@ -22,8 +22,9 @@ export default function ProductsPage() {
     studType: searchParams.get('studType') || '',
     category: searchParams.get('category') || '',
     sort: searchParams.get('sort') || '-createdAt',
-    'minPrice': searchParams.get('priceMin') || '',
-    'maxPrice': searchParams.get('priceMax') || '',
+    minPrice: searchParams.get('priceMin') || '',
+    maxPrice: searchParams.get('priceMax') || '',
+    isFeatured: searchParams.get('isFeatured') || '',
   };
 
   // Remove empty filters
@@ -86,11 +87,9 @@ export default function ProductsPage() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-semibold text-gray-800">ตัวกรอง</h2>
                 {activeFiltersCount > 0 && (
-                  <button 
-                    onClick={clearFilters}
-                    className="text-sm text-primary-600 hover:underline"
-                  >
-                    ล้างทั้งหมด
+                  <button onClick={clearFilters} 
+                  className="text-sm bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition-colors cursor-pointer">
+                      ล้างทั้งหมด
                   </button>
                 )}
               </div>
@@ -271,7 +270,7 @@ export default function ProductsPage() {
             ) : products.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-xl">
                 <p className="text-gray-500 text-lg">ไม่พบสินค้าที่ค้นหา</p>
-                <Button onClick={clearFilters} variant="outline" className="mt-4">
+                <Button onClick={clearFilters} variant="outline" className="mt-4 border-red-500 text-red-500 hover:bg-red-700 cursor-pointer">
                   ล้างตัวกรอง
                 </Button>
               </div>
@@ -385,12 +384,12 @@ function FilterSection({ title, children }) {
 // Filter Tag Component
 function FilterTag({ label, onRemove }) {
   return (
-    <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">
-      {label}
       <button onClick={onRemove} className="hover:text-primary-900">
-        <X className="w-3 h-3" />
+        <span className="inline-flex items-center gap-1 px-3 py-1 bg-primary-200 text-primary-900 rounded-full text-1xl cursor-pointer">
+          {label}
+          <X className='w-5 h-5 text-red-700 cursor-pointer' />
+        </span>
       </button>
-    </span>
   );
 }
 

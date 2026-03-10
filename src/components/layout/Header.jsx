@@ -6,7 +6,6 @@ import {
   User, 
   Menu, 
   X, 
-  Heart,
   LogOut,
   Package,
   Settings
@@ -49,7 +48,7 @@ export default function Header() {
       <div className="bg-primary-600 text-white text-sm py-2">
         <div className="container-custom flex justify-between items-center">
           <p>🚚 ส่งฟรี! เมื่อสั่งซื้อครบ ฿2,000</p>
-          <p className="hidden sm:block">📞 โทร: 02-xxx-xxxx</p>
+          <p className="hidden sm:block">📞 โทร: 02-123-4567</p>
         </div>
       </div>
 
@@ -70,7 +69,7 @@ export default function Header() {
               <span className="text-white font-bold text-xl">⚽</span>
             </div>
             <span className="hidden sm:block font-display font-bold text-xl text-gray-800">
-              Football Cleats
+              Tommy11 Football Store
             </span>
           </Link>
 
@@ -113,12 +112,12 @@ export default function Header() {
               </div>
             </div>
 
-            <Link 
-              to="/products?isFeatured=true" 
-              className="font-medium text-gray-700 hover:text-primary-600 transition-colors"
-            >
-              สินค้าแนะนำ
-            </Link>
+        <Link 
+          to="/products?isFeatured=true" 
+            className="font-medium text-gray-700 hover:text-primary-600 transition-colors"
+        >
+          สินค้าแนะนำ
+        </Link>
           </nav>
 
           {/* Right Actions */}
@@ -131,15 +130,8 @@ export default function Header() {
               <Search className="w-5 h-5 text-gray-600" />
             </button>
 
-            {/* Wishlist */}
-            <Link
-              to="/wishlist"
-              className="hidden sm:flex p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <Heart className="w-5 h-5 text-gray-600" />
-            </Link>
-
-            {/* Cart */}
+            {/* Cart */}  
+          {(!isAuthenticated || user?.role !== 'admin') && (
             <button
               onClick={openCart}
               className="relative p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -151,7 +143,7 @@ export default function Header() {
                 </span>
               )}
             </button>
-
+          )}
             {/* User Menu */}
             {isAuthenticated ? (
               <div className="relative">
@@ -189,6 +181,7 @@ export default function Header() {
                         โปรไฟล์
                       </Link>
                       
+                    {user?.role !== 'admin' && (
                       <Link
                         to="/orders"
                         onClick={() => setIsUserMenuOpen(false)}
@@ -197,7 +190,7 @@ export default function Header() {
                         <Package className="w-4 h-4" />
                         คำสั่งซื้อ
                       </Link>
-
+                    )}
                       {user?.role === 'admin' && (
                         <Link
                           to="/admin"

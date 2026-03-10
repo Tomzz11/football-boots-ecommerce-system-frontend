@@ -23,7 +23,7 @@ export default function HomePage() {
               transition={{ duration: 0.6 }}
             >
               <span className="inline-block px-4 py-2 bg-primary-500/20 text-primary-400 rounded-full text-sm font-medium mb-6">
-                🔥 คอลเลคชันใหม่ 2024
+                🔥 คอลเลคชันใหม่ 2026
               </span>
               
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white leading-tight mb-6">
@@ -155,22 +155,6 @@ export default function HomePage() {
               ))}
             </div>
           )}
-        </div>
-      </section>
-
-      {/* Newsletter */}
-      <section className="py-16 bg-gray-900">
-        <div className="container-custom text-center">
-          <h2 className="text-3xl font-display font-bold text-white mb-4">รับข่าวสารและส่วนลดพิเศษ</h2>
-          <p className="text-gray-400 mb-8">สมัครรับข่าวสารเพื่อรับส่วนลด 10% สำหรับการสั่งซื้อครั้งแรก</p>
-          <form className="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
-            <input
-              type="email"
-              placeholder="กรอกอีเมลของคุณ"
-              className="flex-1 px-6 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
-            />
-            <Button type="submit">สมัครรับข่าวสาร</Button>
-          </form>
         </div>
       </section>
     </div>
