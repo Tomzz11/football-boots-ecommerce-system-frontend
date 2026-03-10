@@ -38,7 +38,7 @@ export default function LoginPage() {
               <span className="text-white font-bold text-2xl">⚽</span>
             </div>
             <span className="font-display font-bold text-2xl text-gray-800">
-              Football Cleats
+              Tommy11 Football Store
             </span>
           </Link>
         </div>
@@ -46,7 +46,7 @@ export default function LoginPage() {
         {/* Form Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <h1 className="text-2xl font-display font-bold text-gray-800 text-center mb-2">
-            ยินดีต้อนรับกลับ
+            ยินดีต้อนรับ
           </h1>
           <p className="text-gray-500 text-center mb-8">
             เข้าสู่ระบบเพื่อดำเนินการต่อ
@@ -107,28 +107,6 @@ export default function LoginPage() {
               เข้าสู่ระบบ
             </Button>
           </form>
-
-          {/* Divider */}
-          <div className="relative my-8">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200" />
-            </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white text-gray-500">หรือ</span>
-            </div>
-          </div>
-
-          {/* Social Login */}
-          <div className="space-y-3">
-            <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
-              <span className="font-medium text-gray-700">เข้าสู่ระบบด้วย Google</span>
-            </button>
-            <button className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-              <img src="https://www.facebook.com/favicon.ico" alt="Facebook" className="w-5 h-5" />
-              <span className="font-medium text-gray-700">เข้าสู่ระบบด้วย Facebook</span>
-            </button>
-          </div>
 
           {/* Register Link */}
           <p className="mt-8 text-center text-gray-600">

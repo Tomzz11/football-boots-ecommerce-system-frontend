@@ -24,7 +24,7 @@ export default function Footer() {
                 <span className="text-white font-bold text-xl">⚽</span>
               </div>
               <span className="font-display font-bold text-xl text-white">
-                Football Cleats
+                Tommy11 Football Store
               </span>
             </Link>
             <p className="text-gray-400 mb-6">
@@ -33,28 +33,20 @@ export default function Footer() {
             
             {/* Social Links */}
             <div className="flex gap-4">
-              <a 
-                href="#" 
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-colors"
-              >
+              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-colors">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a 
-                href="#" 
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-colors"
-              >
+              <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-colors">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a 
-                href="#" 
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-colors"
-              >
+              <a href="https://www.x.com" target="_blank" rel="noopener noreferrer"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-colors">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a 
-                href="#" 
-                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-colors"
-              >
+              <a href="https://www.youtube.com" target="_blank" rel="noopener noreferrer"
+                className="w-10 h-10 bg-gray-800 rounded-lg flex items-center justify-center hover:bg-primary-600 transition-colors">
                 <Youtube className="w-5 h-5" />
               </a>
             </div>
@@ -143,35 +135,13 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="w-5 h-5 text-primary-500 flex-shrink-0" />
-                <a href="tel:021234567" className="hover:text-primary-400 transition-colors">
                   02-123-4567
-                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-primary-500 flex-shrink-0" />
-                <a href="mailto:info@footballcleats.com" className="hover:text-primary-400 transition-colors">
-                  info@footballcleats.com
-                </a>
+                  info@tommy11_football_store.com
               </li>
             </ul>
-
-            {/* Newsletter */}
-            <div className="mt-6">
-              <h4 className="font-medium text-white mb-2">รับข่าวสารและโปรโมชั่น</h4>
-              <form className="flex gap-2">
-                <input
-                  type="email"
-                  placeholder="อีเมลของคุณ"
-                  className="flex-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg focus:outline-none focus:border-primary-500"
-                />
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
-                >
-                  สมัคร
-                </button>
-              </form>
-            </div>
           </div>
         </div>
       </div>
@@ -180,7 +150,7 @@ export default function Footer() {
       <div className="border-t border-gray-800">
         <div className="container-custom py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-gray-500">
-            © {currentYear} Football Cleats Store. All rights reserved.
+            © {currentYear} Tommy11 Football Store. All rights reserved.
           </p>
           
           <div className="flex items-center gap-6 text-sm">
@@ -196,14 +166,17 @@ export default function Footer() {
           <div className="flex items-center gap-2">
             <span className="text-sm text-gray-500 mr-2">ชำระเงินผ่าน:</span>
             <div className="flex gap-2">
-              <div className="w-10 h-6 bg-white rounded flex items-center justify-center text-xs font-bold text-blue-600">
+              <div className="w-12 h-7 bg-white rounded flex items-center justify-center text-xs font-bold text-blue-800">
                 VISA
               </div>
-              <div className="w-10 h-6 bg-white rounded flex items-center justify-center text-xs font-bold text-red-600">
+              <div className="w-12 h-7 bg-white rounded flex items-center justify-center text-xs font-bold text-red-500">
                 MC
               </div>
-              <div className="w-10 h-6 bg-blue-600 rounded flex items-center justify-center text-xs font-bold text-white">
-                PP
+              <div className="w-12 h-7 bg-blue-600 rounded flex items-center justify-center text-xs font-bold text-white">
+                PAY
+              </div>
+              <div className="w-12 h-7 bg-green-600 rounded flex items-center justify-center text-xs font-bold text-white">
+                COD
               </div>
             </div>
           </div>

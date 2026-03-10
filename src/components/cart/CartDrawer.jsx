@@ -97,15 +97,11 @@ export default function CartDrawer() {
                   <ShoppingBag className="w-16 h-16 mb-4 text-gray-300" />
                   <p className="text-lg font-medium">ตะกร้าว่างเปล่า</p>
                   <p className="text-sm">เลือกสินค้าที่ชอบเลย!</p>
-                  <Button
-                    onClick={closeCart}
-                    variant="outline"
-                    className="mt-4"
-                    as={Link}
-                    to="/products"
-                  >
-                    ไปช้อปปิ้ง
-                  </Button>
+                  <Link to="/products" onClick={closeCart}>
+                    <Button variant="outline" className="mt-4">
+                      ไปช้อปปิ้ง
+                    </Button>
+                  </Link>
                 </div>
               ) : (
                 items.map((item) => (
