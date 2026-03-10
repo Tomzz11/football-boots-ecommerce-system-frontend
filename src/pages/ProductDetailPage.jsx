@@ -1,16 +1,16 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
-  Star, Heart, ShoppingCart, Truck, Shield, 
+  Star, ShoppingCart, Truck, Shield, 
   ChevronLeft, ChevronRight, Minus, Plus, Check 
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useProduct, useRelatedProducts } from '../../hooks/useProducts';
-import useCartStore from '../../stores/cartStore';
-import ProductCard from '../../components/product/ProductCard';
-import Button from '../../components/ui/Button';
-import { SectionLoading, ProductGridSkeleton } from '../../components/ui/Loading';
-import { formatPrice, cn } from '../../lib/utils';
+import { useProduct, useRelatedProducts } from '../hooks/useProducts';
+import useCartStore from '../stores/cartStore';
+import ProductCard from '../components/product/ProductCard';
+import Button from '../components/ui/Button';
+import { SectionLoading, ProductGridSkeleton } from '../components/ui/Loading';
+import { formatPrice, cn } from '../lib/utils';
 import GradeBadge from '../components/product/GradeBadge';
 
 export default function ProductDetailPage() {
@@ -137,7 +137,7 @@ export default function ProductDetailPage() {
                     key={index}
                     onClick={() => setSelectedImage(index)}
                     className={cn(
-                      'w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 border-2 transition-all',
+                      'w-20 h-20 rounded-lg overflow-hidden shrink-0 border-2 transition-all',
                       selectedImage === index ? 'border-primary-600' : 'border-transparent'
                     )}
                   >
@@ -268,9 +268,6 @@ export default function ProductDetailPage() {
                 leftIcon={<ShoppingCart className="w-5 h-5" />}
               >
                 {isOutOfStock ? 'สินค้าหมด' : 'เพิ่มลงตะกร้า'}
-              </Button>
-              <Button size="lg" variant="outline" className="flex-shrink-0">
-                <Heart className="w-5 h-5" />
               </Button>
             </div>
 
