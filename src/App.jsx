@@ -12,19 +12,12 @@ const GradeShowcasePage = lazy(() => import('./pages/GradeShowcasePage'));
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 
-// User pages
 const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const OrdersPage = lazy(() => import('./pages/OrdersPage'));
-// Order Detail Page (export แยกจาก OrdersPage)
-const OrderDetailPage = lazy(() =>
-  import('./pages/OrdersPage').then(module => ({ default: module.OrderDetailPage }))
-);
-
-// Placeholder pages (to be created)
+const OrderDetailPage = lazy(() => import('./pages/OrdersPage').then(module => ({ default: module.OrderDetailPage })));
 const ProfilePage = lazy(() => import('./pages/ProfilePage'));
-const AdminDashboard = lazy(() => import('./pages/admin/Dashboard').catch(() => ({ default: () => <PlaceholderPage title="Admin Dashboard" /> })));
+const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 
-// Static pages (บริการลูกค้า + นโยบาย)
 const ShippingHelpPage = lazy(() =>
   import('./pages/StaticPages').then(m => ({ default: m.ShippingPage }))
 );
@@ -126,21 +119,21 @@ export default function App() {
             }
           />
 
-          {/* Admin routes */}
-          <Route
-            path="/admin/*"
-            element={
-              <AdminRoute>
-                <AdminDashboard />
-              </AdminRoute>
-            }
-          />
-
           {/* 404 */}
           <Route path="*" element={<NotFoundPage />} />
         </Route>
 
-        {/* Auth routes without layout */}
+          {/* Admin routes */}
+        <Route 
+          path="/admin/*"
+          element={
+            <AdminRoute>
+              <AdminLayout />
+            </AdminRoute>
+          }
+        />
+
+        {/* Auth routes */}
         <Route
           path="/login"
           element={
