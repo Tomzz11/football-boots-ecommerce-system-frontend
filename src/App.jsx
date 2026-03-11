@@ -12,11 +12,40 @@ const GradeShowcasePage = lazy(() => import('./pages/GradeShowcasePage'));
 const LoginPage = lazy(() => import('./pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/auth/RegisterPage'));
 
+// User pages
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const OrdersPage = lazy(() => import('./pages/OrdersPage'));
+// Order Detail Page (export แยกจาก OrdersPage)
+const OrderDetailPage = lazy(() =>
+  import('./pages/OrdersPage').then(module => ({ default: module.OrderDetailPage }))
+);
+
 // Placeholder pages (to be created)
-const CheckoutPage = lazy(() => import('./pages/CheckoutPage').catch(() => ({ default: () => <PlaceholderPage title="Checkout" /> })));
-const OrdersPage = lazy(() => import('./pages/OrdersPage').catch(() => ({ default: () => <PlaceholderPage title="My Orders" /> })));
-const ProfilePage = lazy(() => import('./pages/ProfilePage').catch(() => ({ default: () => <PlaceholderPage title="Profile" /> })));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard').catch(() => ({ default: () => <PlaceholderPage title="Admin Dashboard" /> })));
+
+// Static pages (บริการลูกค้า + นโยบาย)
+const ShippingHelpPage = lazy(() =>
+  import('./pages/StaticPages').then(m => ({ default: m.ShippingPage }))
+);
+const ReturnsHelpPage = lazy(() =>
+  import('./pages/StaticPages').then(m => ({ default: m.ReturnsPage }))
+);
+const SizeGuidePage = lazy(() =>
+  import('./pages/StaticPages').then(m => ({ default: m.SizeGuidePage }))
+);
+const PaymentHelpPage = lazy(() =>
+  import('./pages/StaticPages').then(m => ({ default: m.PaymentHelpPage }))
+);
+const FAQPage = lazy(() =>
+  import('./pages/StaticPages').then(m => ({ default: m.FAQPage }))
+);
+const PrivacyPage = lazy(() =>
+  import('./pages/StaticPages').then(m => ({ default: m.PrivacyPage }))
+);
+const TermsPage = lazy(() =>
+  import('./pages/StaticPages').then(m => ({ default: m.TermsPage }))
+);
 
 // Placeholder component for pages not yet created
 function PlaceholderPage({ title }) {
@@ -52,8 +81,17 @@ export default function App() {
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
           <Route path="/grades" element={<GradeShowcasePage />} />
-          
-          {/* Protected routes */}
+
+          {/* Help & Static pages (บริการลูกค้า) */}
+          <Route path="/help/shipping" element={<ShippingHelpPage />} />
+          <Route path="/help/returns" element={<ReturnsHelpPage />} />
+          <Route path="/help/size-guide" element={<SizeGuidePage />} />
+          <Route path="/help/payment" element={<PaymentHelpPage />} />
+          <Route path="/help/faq" element={<FAQPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+
+          {/* Protected routes (ต้อง login) */}
           <Route
             path="/checkout"
             element={
@@ -67,6 +105,15 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <OrdersPage />
+              </ProtectedRoute>
+            }
+          />
+          {/* Order Detail Page */}
+          <Route
+            path="/orders/:id"
+            element={
+              <ProtectedRoute>
+                <OrderDetailPage />
               </ProtectedRoute>
             }
           />
@@ -114,3 +161,4 @@ export default function App() {
     </Suspense>
   );
 }
+
