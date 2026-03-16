@@ -8,7 +8,7 @@ import api from '../../lib/axios';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
 import { Spinner } from '../../components/ui/Loading';
-import { formatPrice, getProductImage } from '../../lib/utils';
+import { formatDateTime, getProductImage } from '../../lib/utils';
 import toast from 'react-hot-toast';
 
 export default function AdminInventory() {
@@ -178,7 +178,7 @@ function LowStockList() {
       <div className="p-4 bg-yellow-50 border-b border-yellow-200">
         <p className="text-yellow-800 font-medium flex items-center gap-2">
           <AlertTriangle className="w-5 h-5" />
-          พบ {products.length} สินค้าที่สต็อกต่ำ (น้อยกว่า 5 คู่)
+          พบ {products.length} สินค้าที่สต็อกต่ำ (สต๊อกต่ำคือเหลือ 1 ถึง 5 คู่)
         </p>
       </div>
       <table className="w-full text-sm">
@@ -362,8 +362,11 @@ function StockModal({ product, action, onClose }) {
       const filtered = sizeQuantities.filter(s => s.quantity > 0);
       await api.post(`/inventory/${product._id}/add`, { sizeQuantities: filtered, note });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['admin'], refetchType: 'active' }),
+        queryClient.invalidateQueries({ queryKey: ['products'], refetchType: 'active' }),
+      ]);
       toast.success('เพิ่มสต็อกสำเร็จ');
       onClose();
     },
@@ -378,11 +381,14 @@ function StockModal({ product, action, onClose }) {
         reason: adjustReason,
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin'] });
-      toast.success('ปรับสต็อกสำเร็จ');
-      onClose();
-    },
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['admin'], refetchType: 'active' }),
+        queryClient.invalidateQueries({ queryKey: ['products'], refetchType: 'active' }),
+      ]);
+        toast.success('ปรับสต็อกสำเร็จ');
+        onClose();
+      },
     onError: () => toast.error('ปรับสต็อกไม่สำเร็จ'),
   });
 

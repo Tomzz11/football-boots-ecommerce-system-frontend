@@ -62,17 +62,16 @@ export const SORT_OPTIONS = [
   { value: 'createdAt', label: 'เก่าสุด' },
   { value: 'price', label: 'ราคา: ต่ำ → สูง' },
   { value: '-price', label: 'ราคา: สูง → ต่ำ' },
-  { value: '-rating', label: 'คะแนนสูงสุด' },
   { value: 'name', label: 'ชื่อ: A → Z' },
 ];
 
 // Price ranges
 export const PRICE_RANGES = [
-  { value: '0-2000', label: 'ต่ำกว่า ฿2,000', min: 0, max: 2000 },
+  { value: '0-1999', label: 'ต่ำกว่า ฿2,000', min: 0, max: 1999 },
   { value: '2000-4000', label: '฿2,000 - ฿4,000', min: 2000, max: 4000 },
-  { value: '4000-6000', label: '฿4,000 - ฿6,000', min: 4000, max: 6000 },
-  { value: '6000-10000', label: '฿6,000 - ฿10,000', min: 6000, max: 10000 },
-  { value: '10000-', label: 'มากกว่า ฿10,000', min: 10000, max: null },
+  { value: '4001-6000', label: '฿4,001 - ฿6,000', min: 4001, max: 6000 },
+  { value: '6001-10000', label: '฿6,001 - ฿10,000', min: 6001, max: 10000 },
+  { value: '10001-', label: 'มากกว่า ฿10,000', min: 10001, max: null },
 ];
 
 // Order statuses

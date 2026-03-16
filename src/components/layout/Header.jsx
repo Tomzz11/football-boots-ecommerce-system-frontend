@@ -138,7 +138,7 @@ export default function Header() {
             >
               <ShoppingCart className="w-5 h-5 text-gray-600" />
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
               )}
@@ -167,11 +167,21 @@ export default function Header() {
                       exit={{ opacity: 0, y: 10 }}
                       className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-xl border py-2"
                     >
-                      <div className="px-4 py-2 border-b">
-                        <p className="font-medium">{user?.name}</p>
-                        <p className="text-sm text-gray-500">{user?.email}</p>
+                      <div className="px-4 py-3 border-b flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-medium">{user?.name}</p>
+                          <p className="text-sm text-gray-500">{user?.email}</p>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
                       </div>
-                      
+
                       <Link
                         to="/profile"
                         onClick={() => setIsUserMenuOpen(false)}

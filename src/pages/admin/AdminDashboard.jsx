@@ -1,7 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import {
-  DollarSign, ShoppingCart, Package, AlertTriangle,
-  TrendingUp, ArrowUpRight, ArrowDownRight
+  DollarSign, ShoppingCart, Package, AlertTriangle
 } from 'lucide-react';
 import api from '../../lib/axios';
 import { formatPrice } from '../../lib/utils';

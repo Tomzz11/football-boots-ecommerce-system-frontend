@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { Routes, Route, Link, useLocation, Navigate } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Package, ShoppingCart, Warehouse,
-  Menu, X, ChevronLeft, LogOut, Home, User
+  Menu, X, LogOut, Home
 } from 'lucide-react';
 import useAuthStore from '../../stores/authStore';
 

@@ -96,7 +96,10 @@ export function SizeGuidePage() {
           <tr><td className="p-2 border-b">26.5 - 26.9</td><td className="p-2 border-b">27.0</td></tr>
           <tr><td className="p-2 border-b">27.0 - 27.4</td><td className="p-2 border-b">27.5</td></tr>
           <tr><td className="p-2 border-b">27.5 - 27.9</td><td className="p-2 border-b">28.0</td></tr>
-          <tr><td className="p-2">28.0 - 28.4</td><td className="p-2">28.5</td></tr>
+          <tr><td className="p-2 border-b">28.0 - 28.4</td><td className="p-2 border-b">28.5</td></tr>
+          <tr><td className="p-2 border-b">28.5 - 28.9</td><td className="p-2 border-b">29.0</td></tr>
+          <tr><td className="p-2 border-b">29.0 - 29.4</td><td className="p-2 border-b">29.5</td></tr>
+          <tr><td className="p-2">29.5 - 29.9</td><td className="p-2">30.0</td></tr>
         </tbody>
       </table>
 

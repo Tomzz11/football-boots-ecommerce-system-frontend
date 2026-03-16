@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { 
-  Star, ShoppingCart, Truck, Shield, 
-  ChevronLeft, ChevronRight, Minus, Plus, Check 
+import {
+  Star, ShoppingCart, Truck, Shield,
+  ChevronLeft, ChevronRight, Minus, Plus, Check, RotateCcw
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useProduct, useRelatedProducts } from '../hooks/useProducts';
 import useCartStore from '../stores/cartStore';
+import useAuthStore from '../stores/authStore';
 import ProductCard from '../components/product/ProductCard';
 import Button from '../components/ui/Button';
-import { SectionLoading, ProductGridSkeleton } from '../components/ui/Loading';
+import { SectionLoading } from '../components/ui/Loading';
 import { formatPrice, cn } from '../lib/utils';
 import GradeBadge from '../components/product/GradeBadge';
 
@@ -17,12 +18,16 @@ export default function ProductDetailPage() {
   const { id } = useParams();
   const { data: product, isLoading, error } = useProduct(id);
   const { data: relatedProducts } = useRelatedProducts(id);
-  
+
   const [selectedSize, setSelectedSize] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
-  
-  const { addItem, isInCart } = useCartStore();
+  const [sizeWarning, setSizeWarning] = useState('');
+
+  const { addItem } = useCartStore();
+
+  const { user } = useAuthStore();
+  const isAdminView = user?.role === 'admin';
 
   if (isLoading) return <SectionLoading />;
   if (error || !product) {
@@ -52,23 +57,65 @@ export default function ProductDetailPage() {
     category,
   } = product;
 
+  const allSizesOutOfStock = sizes.length > 0 && sizes.every((s) => s.stock === 0);
   const hasDiscount = comparePrice && comparePrice > price;
-  const discountPercent = hasDiscount 
+  const discountPercent = hasDiscount
     ? Math.round(((comparePrice - price) / comparePrice) * 100)
     : 0;
 
-  const selectedSizeData = sizes.find(s => s.size === selectedSize);
+  const selectedSizeData = sizes.find((s) => s.size === selectedSize);
   const isOutOfStock = !selectedSizeData || selectedSizeData.stock === 0;
   const maxQuantity = selectedSizeData?.stock || 1;
 
-  const handleAddToCart = () => {
-    if (!selectedSize) {
-      alert('กรุณาเลือกไซส์');
-      return;
-    }
-    addItem(product, selectedSize, quantity);
+  const handleSelectSize = (size) => {
+    setSelectedSize(size);
+    setQuantity(1);
+    setSizeWarning('');
   };
 
+  const handleDecreaseQuantity = () => {
+    if (!selectedSize) {
+      setSizeWarning('กรุณาเลือกไซส์รองเท้าก่อน เพื่อปรับจำนวนสินค้า');
+      return;
+    }
+
+    setQuantity((q) => Math.max(1, q - 1));
+    setSizeWarning('');
+  };
+
+  const handleIncreaseQuantity = () => {
+    if (!selectedSize) {
+      setSizeWarning('กรุณาเลือกไซส์รองเท้าก่อน เพื่อปรับจำนวนสินค้า');
+      return;
+    }
+
+    setQuantity((q) => Math.min(maxQuantity, q + 1));
+    setSizeWarning('');
+  };
+
+  const handleResetSelection = () => {
+    setSelectedSize(null);
+    setQuantity(1);
+    setSizeWarning('');
+  };
+
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      setSizeWarning('กรุณาเลือกไซส์รองเท้าก่อน');
+      return;
+    }
+
+    addItem(product, selectedSize, quantity);
+    setSizeWarning('');
+  };
+
+  const actionButtonText = !selectedSize
+    ? 'กรุณาเลือกไซส์ก่อน'
+    : isOutOfStock
+      ? 'สินค้าหมด'
+      : 'เพิ่มลงตะกร้า';
+
+  
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Breadcrumb */}
@@ -90,8 +137,7 @@ export default function ProductDetailPage() {
         <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
           {/* Images */}
           <div className="space-y-4">
-            {/* Main Image */}
-            <motion.div 
+            <motion.div
               key={selectedImage}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -102,18 +148,17 @@ export default function ProductDetailPage() {
                 alt={name}
                 className="w-full h-full object-cover"
               />
-              
-              {/* Navigation Arrows */}
+
               {images.length > 1 && (
                 <>
                   <button
-                    onClick={() => setSelectedImage(i => i === 0 ? images.length - 1 : i - 1)}
+                    onClick={() => setSelectedImage((i) => (i === 0 ? images.length - 1 : i - 1))}
                     className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 rounded-full flex items-center justify-center shadow-lg hover:bg-white"
                   >
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button
-                    onClick={() => setSelectedImage(i => i === images.length - 1 ? 0 : i + 1)}
+                    onClick={() => setSelectedImage((i) => (i === images.length - 1 ? 0 : i + 1))}
                     className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 rounded-full flex items-center justify-center shadow-lg hover:bg-white"
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -121,7 +166,6 @@ export default function ProductDetailPage() {
                 </>
               )}
 
-              {/* Badges */}
               {hasDiscount && (
                 <span className="absolute top-4 left-4 bg-red-500 text-white text-sm font-bold px-3 py-1 rounded">
                   -{discountPercent}%
@@ -129,7 +173,6 @@ export default function ProductDetailPage() {
               )}
             </motion.div>
 
-            {/* Thumbnails */}
             {images.length > 1 && (
               <div className="flex gap-3 overflow-x-auto pb-2">
                 {images.map((img, index) => (
@@ -150,13 +193,11 @@ export default function ProductDetailPage() {
 
           {/* Product Info */}
           <div>
-            {/* Brand & Name */}
             <p className="text-primary-600 font-semibold uppercase tracking-wider">{brand}</p>
             <h1 className="text-2xl lg:text-3xl font-display font-bold text-gray-800 mt-2">
               {name}
             </h1>
 
-            {/* Rating */}
             {numReviews > 0 && (
               <div className="flex items-center gap-2 mt-3">
                 <div className="flex items-center gap-1">
@@ -175,7 +216,6 @@ export default function ProductDetailPage() {
               </div>
             )}
 
-            {/* Price */}
             <div className="mt-6 flex items-baseline gap-3">
               <span className="text-3xl font-bold text-primary-600">
                 {formatPrice(price)}
@@ -187,7 +227,6 @@ export default function ProductDetailPage() {
               )}
             </div>
 
-            {/* Tags */}
             <div className="flex gap-2 mt-4">
               <GradeBadge grade={grade} size="md" />
               <span className="badge badge-info">{studType}</span>
@@ -202,15 +241,16 @@ export default function ProductDetailPage() {
                   คู่มือไซส์
                 </Link>
               </div>
+
               <div className="flex flex-wrap gap-2">
                 {sizes.map((sizeObj) => {
                   const isAvailable = sizeObj.stock > 0;
                   const isSelected = selectedSize === sizeObj.size;
-                  
+
                   return (
                     <button
                       key={sizeObj.size}
-                      onClick={() => isAvailable && setSelectedSize(sizeObj.size)}
+                      onClick={() => isAvailable && handleSelectSize(sizeObj.size)}
                       disabled={!isAvailable}
                       className={cn(
                         'w-14 h-12 rounded-lg font-medium transition-all',
@@ -226,37 +266,64 @@ export default function ProductDetailPage() {
                   );
                 })}
               </div>
+
               {selectedSizeData && (
                 <p className="text-sm text-gray-500 mt-2">
                   เหลือ {selectedSizeData.stock} คู่
                 </p>
               )}
-            </div>
 
+              {sizeWarning && (
+                <p className="text-sm text-red-500 mt-2 font-medium">
+                  {sizeWarning}
+                </p>
+              )}
+            </div>
+            
+          {!isAdminView ? (
+            <>
             {/* Quantity */}
             <div className="mt-6">
-              <span className="font-medium text-gray-800 block mb-3">จำนวน</span>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center border-2 rounded-lg">
+                  <div className="flex items-center justify-between mb-3">
+                  <span className="font-medium text-gray-800">จำนวน</span>
+
                   <button
-                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                    className="w-12 h-12 flex items-center justify-center hover:bg-gray-100"
+                    type="button"
+                    onClick={handleResetSelection}
+                    className="inline-flex items-center gap-1 text-sm text-red-500 hover:text-red-600 font-medium"
                   >
-                    <Minus className="w-4 h-4" />
-                  </button>
-                  <span className="w-12 text-center font-medium">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(q => Math.min(maxQuantity, q + 1))}
-                    className="w-12 h-12 flex items-center justify-center hover:bg-gray-100"
-                  >
-                    <Plus className="w-4 h-4" />
+                    ล้างการเลือก
                   </button>
                 </div>
-                <span className="text-gray-500">
-                  (มีสินค้า {maxQuantity} คู่)
-                </span>
+
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center border-2 rounded-lg">
+                    <button
+                      type="button"
+                      onClick={handleDecreaseQuantity}
+                      className="w-12 h-12 flex items-center justify-center hover:bg-gray-100"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+
+                    <span className="w-12 text-center font-medium">{quantity}</span>
+
+                    <button
+                      type="button"
+                      onClick={handleIncreaseQuantity}
+                      className="w-12 h-12 flex items-center justify-center hover:bg-gray-100"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {selectedSize && (
+                    <span className="text-sm text-gray-500">
+                      เลือกไซส์ {selectedSize} CM
+                    </span>
+                  )}
+                </div>
               </div>
-            </div>
 
             {/* Actions */}
             <div className="flex gap-4 mt-8">
@@ -267,9 +334,27 @@ export default function ProductDetailPage() {
                 disabled={!selectedSize || isOutOfStock}
                 leftIcon={<ShoppingCart className="w-5 h-5" />}
               >
-                {isOutOfStock ? 'สินค้าหมด' : 'เพิ่มลงตะกร้า'}
+                {actionButtonText}
               </Button>
             </div>
+            </>
+            ) : (
+                <div className="mt-8 bg-white rounded-xl p-5 border">
+                  <p className="font-semibold text-gray-800 mb-2">สถานะสำหรับผู้ดูแล</p>
+
+                  {allSizesOutOfStock ? (
+                    <p className="text-red-600 font-medium">สินค้าหมดสต๊อก</p>
+                  ) : !selectedSize ? (
+                    <p className="text-gray-500">เลือกไซส์เพื่อดูจำนวนสต๊อก</p>
+                  ) : selectedSizeData?.stock === 0 ? (
+                    <p className="text-red-600 font-medium">ไซส์นี้สินค้าหมด</p>
+                  ) : (
+                    <p className="text-green-600 font-medium">
+                      ไซส์นี้เหลือ {selectedSizeData.stock} คู่
+                    </p>
+                  )}
+                </div>
+              )}
 
             {/* Features */}
             <div className="mt-8 p-6 bg-white rounded-xl space-y-4">
@@ -349,7 +434,4 @@ export default function ProductDetailPage() {
     </div>
   );
 }
-
-
-
 

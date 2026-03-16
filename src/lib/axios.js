@@ -29,7 +29,7 @@ api.interceptors.response.use(
     (error) => {
         if (error.response?.status === 401) {
             localStorage.removeItem('token');
-            localStorage.removeItem('user');
+            localStorage.removeItem('auth-storage');
             
             if (window.location.pathname !== '/login') {
                 toast.error('กรุณาเข้าสู่ระบบใหม่');
