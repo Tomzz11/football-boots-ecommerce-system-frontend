@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ChevronLeft, Upload, X, Image as ImageIcon } from 'lucide-react';
+import { ChevronLeft, Upload, X, Plus } from 'lucide-react';
 import api from '../../lib/axios';
 import Button from '../../components/ui/Button';
 import Input from '../../components/ui/Input';
@@ -118,8 +118,15 @@ export default function AdminProductForm() {
     if (!window.confirm('ต้องการลบรูปนี้หรือไม่?')) return;
     try {
       await api.delete(`/products/${id}/images/${imageId}`);
+
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['admin'], refetchType: 'active' }),
+        queryClient.invalidateQueries({ queryKey: ['products'], refetchType: 'active' }),
+      ]);
+
       setExistingImages(prev => prev.filter(img => img._id !== imageId));
       toast.success('ลบรูปสำเร็จ');
+      
     } catch (err) {
       toast.error('ลบรูปไม่สำเร็จ');
     }
@@ -148,11 +155,14 @@ export default function AdminProductForm() {
     setIsSubmitting(true);
     try {
       const submitData = {
-        ...formData,
-        price: Number(formData.price),
-        comparePrice: formData.comparePrice ? Number(formData.comparePrice) : undefined,
-        sizes: formData.sizes.filter(s => s.size > 0),
-      };
+      ...formData,
+      price: Number(formData.price),
+      comparePrice:
+        formData.comparePrice === '' || formData.comparePrice === null
+          ? null
+          : Number(formData.comparePrice),
+      sizes: formData.sizes.filter((s) => s.size > 0),
+    };
 
       let productId = id;
 
@@ -160,10 +170,6 @@ export default function AdminProductForm() {
         await api.put(`/products/${id}`, submitData);
         toast.success('แก้ไขสินค้าสำเร็จ');
       } else {
-        // For new product, include placeholder image if uploading
-        if (imageFiles.length > 0) {
-          submitData.images = [{ url: 'placeholder', public_id: 'placeholder', isPrimary: true }];
-        }
         const res = await api.post('/products', submitData);
         productId = res.data?.product?._id || res.product?._id || res.data?._id;
         toast.success('สร้างสินค้าสำเร็จ');
@@ -183,7 +189,10 @@ export default function AdminProductForm() {
         }
       }
 
-      queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['admin'], refetchType: 'active' }),
+      queryClient.invalidateQueries({ queryKey: ['products'], refetchType: 'active' }),
+    ]);
       navigate('/admin/products');
     } catch (err) {
       const message = err.response?.data?.message || 'เกิดข้อผิดพลาด';

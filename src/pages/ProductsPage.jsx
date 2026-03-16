@@ -52,6 +52,26 @@ export default function ProductsPage() {
     setSearchParams({});
   };
 
+  const clearPriceFilter = () => {
+  const newParams = new URLSearchParams(searchParams);
+  newParams.delete('priceMin');
+  newParams.delete('priceMax');
+  newParams.delete('page');
+  setSearchParams(newParams);
+};
+
+const selectedPriceRange = PRICE_RANGES.find((range) => {
+  const currentMin = searchParams.get('priceMin');
+  const currentMax = searchParams.get('priceMax');
+
+  const minMatched = currentMin === String(range.min);
+  const maxMatched = range.max === null
+    ? !currentMax
+    : currentMax === String(range.max);
+
+  return minMatched && maxMatched;
+});
+
   const activeFiltersCount = [
     searchParams.get('brand'),
     searchParams.get('studType'),
@@ -255,6 +275,12 @@ export default function ProductsPage() {
                   <FilterTag 
                     label={`หมวด: ${searchParams.get('category')}`}
                     onRemove={() => updateFilter('category', '')}
+                  />
+                )}
+                {selectedPriceRange && (
+                  <FilterTag
+                    label={`ราคา: ${selectedPriceRange.label}`}
+                    onRemove={clearPriceFilter}
                   />
                 )}
               </div>

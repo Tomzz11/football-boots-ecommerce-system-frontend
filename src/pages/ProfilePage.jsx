@@ -442,7 +442,7 @@ function AddressForm({ address, onSave, onCancel, isSubmitting }) {
             value={formData.address}
             onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
             error={errors.address}
-            placeholder="เช่น 99/99 ซอยสุขุมวิท 45 แขวงพระโขนง เขตคลองเตย"
+            placeholder="เช่น 999/99 ซอยสุขุมวิท 99 แขวงพระโขนง เขตคลองเตย"
             required
           />
         </div>

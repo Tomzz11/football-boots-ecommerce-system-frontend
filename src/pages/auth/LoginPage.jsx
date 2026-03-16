@@ -87,17 +87,6 @@ export default function LoginPage() {
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
-
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="rounded text-primary-600 focus:ring-primary-500" />
-                <span className="text-gray-600">จดจำฉัน</span>
-              </label>
-              <Link to="/forgot-password" className="text-primary-600 hover:underline">
-                ลืมรหัสผ่าน?
-              </Link>
-            </div>
-
             <Button
               type="submit"
               fullWidth

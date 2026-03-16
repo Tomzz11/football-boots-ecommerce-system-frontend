@@ -13,11 +13,22 @@ export const orderKeys = {
 };
 
 /**
+ * รองรับหลายรูปแบบ response ของ order:
+ * - { success: true, data: { order } }
+ * - { data: { order } }
+ * - { order }
+ * - order object ตรง ๆ
+ */
+function unwrapOrderResponse(response) {
+  return response?.data?.order || response?.order || response?.data || response || null;
+}
+
+/**
  * Get user's orders
  */
 export function useMyOrders(filters = {}) {
   const queryString = new URLSearchParams(filters).toString();
-  
+
   return useQuery({
     queryKey: orderKeys.myOrders(filters),
     queryFn: async () => {
@@ -35,7 +46,7 @@ export function useOrder(orderId) {
     queryKey: orderKeys.detail(orderId),
     queryFn: async () => {
       const response = await api.get(`/orders/${orderId}`);
-      return response.data.order;
+      return unwrapOrderResponse(response);
     },
     enabled: !!orderId,
   });
@@ -47,11 +58,11 @@ export function useOrder(orderId) {
 export function useCreateOrder() {
   const queryClient = useQueryClient();
   const clearCart = useCartStore((state) => state.clearCart);
-  
+
   return useMutation({
     mutationFn: async (orderData) => {
       const response = await api.post('/orders', orderData);
-      return response.data.order;
+      return unwrapOrderResponse(response);
     },
     onSuccess: (order) => {
       clearCart();
@@ -71,14 +82,16 @@ export function useCreateOrder() {
  */
 export function usePayOrder() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ orderId, paymentResult }) => {
       const response = await api.put(`/orders/${orderId}/pay`, paymentResult);
-      return response.data.order;
+      return unwrapOrderResponse(response);
     },
     onSuccess: (order) => {
-      queryClient.invalidateQueries({ queryKey: orderKeys.detail(order._id) });
+      if (order?._id) {
+        queryClient.invalidateQueries({ queryKey: orderKeys.detail(order._id) });
+      }
       queryClient.invalidateQueries({ queryKey: orderKeys.lists() });
       toast.success('ชำระเงินสำเร็จ!');
     },
@@ -90,14 +103,16 @@ export function usePayOrder() {
  */
 export function useCancelOrder() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
     mutationFn: async ({ orderId, reason }) => {
       const response = await api.put(`/orders/${orderId}/cancel`, { reason });
-      return response.data.order;
+      return unwrapOrderResponse(response);
     },
     onSuccess: (order) => {
-      queryClient.invalidateQueries({ queryKey: orderKeys.detail(order._id) });
+      if (order?._id) {
+        queryClient.invalidateQueries({ queryKey: orderKeys.detail(order._id) });
+      }
       queryClient.invalidateQueries({ queryKey: orderKeys.lists() });
       toast.success('ยกเลิกออเดอร์สำเร็จ');
     },
@@ -111,8 +126,9 @@ export function useCheckStock() {
   return useMutation({
     mutationFn: async (items) => {
       const response = await api.post('/inventory/check', { items });
-      return response.data;
+      return response?.data || response;
     },
   });
 }
+
 
