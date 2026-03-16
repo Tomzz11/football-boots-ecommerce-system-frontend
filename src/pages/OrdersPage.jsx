@@ -9,6 +9,19 @@ import Button from '../components/ui/Button';
 import { Spinner } from '../components/ui/Loading';
 import { formatPrice, formatDateTime, getOrderStatus, getProductImage } from '../lib/utils';
 
+function getPaymentMethodLabel(method) {
+  const normalized = String(method || '').toLowerCase();
+
+  const labels = {
+    credit_card: 'บัตรเครดิต/เดบิต',
+    bank_transfer: 'โอนเงินผ่านธนาคาร',
+    promptpay: 'PromptPay',
+    cod: 'เก็บเงินปลายทาง',
+  };
+
+  return labels[normalized] || method || '-';
+}
+
 // ============================================
 // Orders List Page
 // ============================================
@@ -35,6 +48,11 @@ export default function OrdersPage() {
     { value: 'cancelled', label: 'ยกเลิก' },
   ];
 
+  const currentStatusLabel =
+    statusTabs.find((tab) => tab.value === statusFilter)?.label || 'ทั้งหมด';
+
+  const hasStatusFilter = Boolean(statusFilter);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b">
@@ -52,7 +70,10 @@ export default function OrdersPage() {
           {statusTabs.map((tab) => (
             <button
               key={tab.value}
-              onClick={() => { setStatusFilter(tab.value); setPage(1); }}
+              onClick={() => {
+                setStatusFilter(tab.value);
+                setPage(1);
+              }}
               className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
                 ${statusFilter === tab.value
                   ? 'bg-primary-600 text-white'
@@ -71,11 +92,41 @@ export default function OrdersPage() {
         ) : orders.length === 0 ? (
           <div className="bg-white rounded-xl p-12 text-center">
             <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-bold text-gray-800 mb-2">ยังไม่มีคำสั่งซื้อ</h3>
-            <p className="text-gray-500 mb-6">เลือกสินค้าที่ชอบแล้วสั่งซื้อเลย!</p>
-            <Link to="/products">
-              <Button>ไปเลือกสินค้า</Button>
-            </Link>
+
+            {hasStatusFilter ? (
+              <>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">
+                  ยังไม่มีคำสั่งซื้อในสถานะ "{currentStatusLabel}"
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  ลองดูคำสั่งซื้อทั้งหมด หรือไปเลือกสินค้าเพิ่มเติม
+                </p>
+
+                <div className="flex flex-col sm:flex-row justify-center gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setStatusFilter('');
+                      setPage(1);
+                    }}
+                  >
+                    ดูทุกคำสั่งซื้อ
+                  </Button>
+
+                  <Link to="/products">
+                    <Button>ไปเลือกสินค้า</Button>
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <h3 className="text-lg font-bold text-gray-800 mb-2">ยังไม่มีคำสั่งซื้อ</h3>
+                <p className="text-gray-500 mb-6">เลือกสินค้าที่ชอบแล้วสั่งซื้อเลย!</p>
+                <Link to="/products">
+                  <Button>ไปเลือกสินค้า</Button>
+                </Link>
+              </>
+            )}
           </div>
         ) : (
           <div className="space-y-4">
@@ -91,7 +142,9 @@ export default function OrdersPage() {
                     key={p}
                     onClick={() => setPage(p)}
                     className={`w-10 h-10 rounded-lg font-medium ${
-                      page === p ? 'bg-primary-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-100'
+                      page === p
+                        ? 'bg-primary-600 text-white'
+                        : 'bg-white text-gray-700 hover:bg-gray-100'
                     }`}
                   >
                     {p}
@@ -122,8 +175,10 @@ function OrderCard({ order }) {
   };
 
   return (
-    <Link to={`/orders/${order._id}`}
-      className="block bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6">
+    <Link
+      to={`/orders/${order._id}`}
+      className="block bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6"
+    >
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div>
@@ -173,7 +228,7 @@ function OrderCard({ order }) {
 }
 
 // ============================================
-// Order Detail Page (export separately)
+// Order Detail Page
 // ============================================
 export function OrderDetailPage() {
   const { id } = useParams();
@@ -206,6 +261,20 @@ export function OrderDetailPage() {
   const status = getOrderStatus(order.orderStatus);
   const canCancel = ['pending', 'confirmed'].includes(order.orderStatus);
 
+  const paymentStatusText =
+    order.orderStatus === 'cancelled'
+      ? 'ยกเลิก'
+      : order.isPaid
+        ? 'ชำระแล้ว'
+        : 'รอชำระเงิน';
+
+  const paymentStatusClass =
+    order.orderStatus === 'cancelled'
+      ? 'text-red-600 font-medium'
+      : order.isPaid
+        ? 'text-green-600 font-medium'
+        : 'text-yellow-600 font-medium';
+
   const statusSteps = [
     { key: 'pending', label: 'รอดำเนินการ', icon: Clock },
     { key: 'confirmed', label: 'ยืนยันแล้ว', icon: CheckCircle },
@@ -214,13 +283,18 @@ export function OrderDetailPage() {
     { key: 'delivered', label: 'ส่งถึงแล้ว', icon: CheckCircle },
   ];
 
-  const currentStepIndex = statusSteps.findIndex(s => s.key === order.orderStatus);
+  const currentStepIndex = statusSteps.findIndex((s) => s.key === order.orderStatus);
 
   const handleCancel = async () => {
     if (!cancelReason.trim()) return;
+
     try {
-      await cancelOrder.mutateAsync({ orderId: order._id, reason: cancelReason });
+      await cancelOrder.mutateAsync({
+        orderId: order._id,
+        reason: cancelReason,
+      });
       setShowCancelModal(false);
+      setCancelReason('');
     } catch (err) {
       console.error(err);
     }
@@ -254,6 +328,7 @@ export function OrderDetailPage() {
                 const Icon = step.icon;
                 const isActive = index <= currentStepIndex;
                 const isCurrent = index === currentStepIndex;
+
                 return (
                   <div key={step.key} className="flex flex-col items-center flex-1">
                     <div className="flex items-center w-full">
@@ -261,8 +336,12 @@ export function OrderDetailPage() {
                         <div className={`flex-1 h-1 ${isActive ? 'bg-primary-600' : 'bg-gray-200'}`} />
                       )}
                       <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0
-                        ${isCurrent ? 'bg-primary-600 text-white ring-4 ring-primary-100' :
-                          isActive ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-400'}`}>
+                        ${isCurrent
+                          ? 'bg-primary-600 text-white ring-4 ring-primary-100'
+                          : isActive
+                            ? 'bg-primary-600 text-white'
+                            : 'bg-gray-200 text-gray-400'}`}
+                      >
                         <Icon className="w-5 h-5" />
                       </div>
                       {index < statusSteps.length - 1 && (
@@ -331,6 +410,7 @@ export function OrderDetailPage() {
               <p>{order.shippingAddress?.address}</p>
               <p>{order.shippingAddress?.city} {order.shippingAddress?.postalCode}</p>
             </div>
+
             {order.trackingNumber && (
               <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                 <p className="text-sm text-blue-600">
@@ -348,6 +428,10 @@ export function OrderDetailPage() {
             </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
+                <span className="text-gray-500">วิธีชำระเงิน</span>
+                <span>{getPaymentMethodLabel(order.paymentMethod)}</span>
+              </div>
+              <div className="flex justify-between">
                 <span className="text-gray-500">ราคาสินค้า</span>
                 <span>{formatPrice(order.itemsPrice)}</span>
               </div>
@@ -364,8 +448,8 @@ export function OrderDetailPage() {
               </div>
               <div className="flex justify-between mt-2">
                 <span className="text-gray-500">สถานะชำระเงิน</span>
-                <span className={order.isPaid ? 'text-green-600 font-medium' : 'text-yellow-600 font-medium'}>
-                  {order.isPaid ? 'ชำระแล้ว' : 'รอชำระเงิน'}
+                <span className={paymentStatusClass}>
+                  {paymentStatusText}
                 </span>
               </div>
             </div>
@@ -398,9 +482,13 @@ export function OrderDetailPage() {
                 <Button variant="ghost" fullWidth onClick={() => setShowCancelModal(false)}>
                   ไม่ยกเลิก
                 </Button>
-                <Button variant="danger" fullWidth onClick={handleCancel}
+                <Button
+                  variant="danger"
+                  fullWidth
+                  onClick={handleCancel}
                   isLoading={cancelOrder.isPending}
-                  disabled={!cancelReason.trim()}>
+                  disabled={!cancelReason.trim()}
+                >
                   ยืนยันยกเลิก
                 </Button>
               </div>
@@ -411,3 +499,5 @@ export function OrderDetailPage() {
     </div>
   );
 }
+
+

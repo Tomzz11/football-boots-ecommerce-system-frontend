@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Edit, Trash2, Eye, Image } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Eye, Package } from 'lucide-react';
 import api from '../../lib/axios';
 import Button from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Loading';
@@ -30,8 +30,11 @@ export default function AdminProducts() {
     mutationFn: async (productId) => {
       await api.delete(`/products/${productId}`);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['admin'], refetchType: 'active' }),
+        queryClient.invalidateQueries({ queryKey: ['products'], refetchType: 'active' }),
+      ]);
       toast.success('ลบสินค้าสำเร็จ');
     },
     onError: () => {

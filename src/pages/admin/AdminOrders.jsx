@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { Search, Eye, Clock } from 'lucide-react';
 import api from '../../lib/axios';
@@ -10,6 +10,7 @@ export default function AdminOrders() {
   const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState('');
   const [search, setSearch] = useState('');
+  const navigate = useNavigate();
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin', 'orders', { page, status: statusFilter, search }],
@@ -44,16 +45,43 @@ export default function AdminOrders() {
     cancelled: 'bg-red-100 text-red-800',
   };
 
+  const getPaymentStatusDisplay = (order) => {
+    if (order.orderStatus === 'cancelled') {
+      return {
+        text: 'ยกเลิก',
+        className: 'bg-red-100 text-red-700',
+      };
+    }
+
+    if (order.isPaid) {
+      return {
+        text: 'ชำระแล้ว',
+        className: 'bg-green-100 text-green-700',
+      };
+    }
+
+    return {
+      text: 'รอชำระ',
+      className: 'bg-yellow-100 text-yellow-700',
+    };
+  };
+
+  const handleOpenOrder = (orderId) => {
+    navigate(`/admin/orders/${orderId}`);
+  };
+
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-bold text-gray-800">คำสั่งซื้อทั้งหมด</h2>
 
-      {/* Status Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2">
         {statusTabs.map((tab) => (
           <button
             key={tab.value}
-            onClick={() => { setStatusFilter(tab.value); setPage(1); }}
+            onClick={() => {
+              setStatusFilter(tab.value);
+              setPage(1);
+            }}
             className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors
               ${statusFilter === tab.value
                 ? 'bg-primary-600 text-white'
@@ -64,7 +92,6 @@ export default function AdminOrders() {
         ))}
       </div>
 
-      {/* Search */}
       <div className="bg-white rounded-xl shadow-sm p-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -72,13 +99,15 @@ export default function AdminOrders() {
             type="text"
             placeholder="ค้นหาหมายเลขคำสั่งซื้อ หรือชื่อผู้สั่ง..."
             value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             className="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
         </div>
       </div>
 
-      {/* Orders Table */}
       {isLoading ? (
         <div className="flex justify-center py-12"><Spinner size="lg" /></div>
       ) : orders.length === 0 ? (
@@ -105,6 +134,8 @@ export default function AdminOrders() {
               <tbody>
                 {orders.map((order) => {
                   const status = getOrderStatus(order.orderStatus);
+                  const paymentStatus = getPaymentStatusDisplay(order);
+
                   return (
                     <tr key={order._id} className="border-b last:border-0 hover:bg-gray-50">
                       <td className="py-3 px-4 font-medium text-gray-800">{order.orderNumber}</td>
@@ -119,17 +150,20 @@ export default function AdminOrders() {
                         </span>
                       </td>
                       <td className="py-3 px-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium
-                          ${order.isPaid ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                          {order.isPaid ? 'ชำระแล้ว' : 'รอชำระ'}
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${paymentStatus.className}`}>
+                          {paymentStatus.text}
                         </span>
                       </td>
                       <td className="py-3 px-4 text-gray-500 text-xs">{formatDateTime(order.createdAt)}</td>
                       <td className="py-3 px-4 text-right">
-                        <Link to={`/admin/orders/${order._id}`}
-                          className="p-2 hover:bg-blue-50 rounded-lg text-gray-400 hover:text-blue-600 inline-flex">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenOrder(order._id)}
+                          className="p-2 hover:bg-blue-50 rounded-lg text-gray-400 hover:text-blue-600 inline-flex"
+                          aria-label={`ดูรายละเอียดคำสั่งซื้อ ${order.orderNumber}`}
+                        >
                           <Eye className="w-4 h-4" />
-                        </Link>
+                        </button>
                       </td>
                     </tr>
                   );
@@ -141,9 +175,13 @@ export default function AdminOrders() {
           {pagination.totalPages > 1 && (
             <div className="flex justify-center gap-2 p-4 border-t">
               {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((p) => (
-                <button key={p} onClick={() => setPage(p)}
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
                   className={`w-9 h-9 rounded-lg text-sm font-medium ${
-                    page === p ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>
+                    page === p ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
                   {p}
                 </button>
               ))}
@@ -154,6 +192,3 @@ export default function AdminOrders() {
     </div>
   );
 }
-
-
-

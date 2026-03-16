@@ -194,7 +194,7 @@ function CartItem({ item, onUpdateQuantity, onRemove }) {
         </Link>
         
         <p className="text-sm text-gray-500 mt-1">
-          ไซส์: EU {size}
+          ไซส์: {size} CM
         </p>
         
         <div className="flex items-center justify-between mt-2">

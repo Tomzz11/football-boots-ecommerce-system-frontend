@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   ChevronLeft, MapPin, Phone, CreditCard, Truck,
-  Package, Clock, CheckCircle, XCircle, Send
+  XCircle, Send, CheckCircle
 } from 'lucide-react';
 import api from '../../lib/axios';
 import Button from '../../components/ui/Button';
@@ -11,6 +11,23 @@ import Input from '../../components/ui/Input';
 import { Spinner } from '../../components/ui/Loading';
 import { formatPrice, formatDateTime, getOrderStatus, getProductImage } from '../../lib/utils';
 import toast from 'react-hot-toast';
+
+function unwrapOrderResponse(res) {
+  return res?.data?.order || res?.order || res?.data || res || null;
+}
+
+function getPaymentMethodLabel(method) {
+  const normalized = String(method || '').toLowerCase();
+
+  const labels = {
+    credit_card: 'บัตรเครดิต/เดบิต',
+    bank_transfer: 'โอนเงินผ่านธนาคาร',
+    promptpay: 'PromptPay',
+    cod: 'เก็บเงินปลายทาง',
+  };
+
+  return labels[normalized] || method || '-';
+}
 
 export default function AdminOrderDetail() {
   const { id } = useParams();
@@ -20,11 +37,11 @@ export default function AdminOrderDetail() {
   const [cancelReason, setCancelReason] = useState('');
   const [showCancelModal, setShowCancelModal] = useState(false);
 
-  const { data: order, isLoading } = useQuery({
+  const { data: order, isLoading, error } = useQuery({
     queryKey: ['admin', 'order', id],
     queryFn: async () => {
       const res = await api.get(`/orders/${id}`);
-      return res.data?.order || res.order || res.data;
+      return unwrapOrderResponse(res);
     },
     enabled: !!id,
   });
@@ -32,11 +49,14 @@ export default function AdminOrderDetail() {
   const updateStatus = useMutation({
     mutationFn: async ({ status, note }) => {
       const res = await api.put(`/orders/${id}/status`, { status, note });
-      return res;
+      return unwrapOrderResponse(res);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'order', id] });
-      queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['admin', 'order', id] }),
+        queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] }),
+        queryClient.invalidateQueries({ queryKey: ['orders'] }),
+      ]);
       toast.success('อัปเดตสถานะสำเร็จ');
     },
     onError: (err) => {
@@ -47,25 +67,59 @@ export default function AdminOrderDetail() {
   const updateShipping = useMutation({
     mutationFn: async () => {
       const res = await api.put(`/orders/${id}/shipping`, { trackingNumber });
-      return res;
+      return unwrapOrderResponse(res);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'order', id] });
-      toast.success('อัปเดตเลขพัสดุสำเร็จ');
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['admin', 'order', id] }),
+        queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] }),
+        queryClient.invalidateQueries({ queryKey: ['orders'] }),
+      ]);
+      toast.success('บันทึกเลขพัสดุและอัปเดตเป็นจัดส่งแล้วสำเร็จ');
       setTrackingNumber('');
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'อัปเดตเลขพัสดุไม่สำเร็จ');
+    },
+  });
+
+  const updatePaid = useMutation({
+    mutationFn: async () => {
+      const res = await api.put(`/orders/${id}/pay`, {
+        status: 'paid-by-admin',
+      });
+      return unwrapOrderResponse(res);
+    },
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['admin', 'order', id] }),
+        queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] }),
+        queryClient.invalidateQueries({ queryKey: ['orders'] }),
+      ]);
+      toast.success('บันทึกว่าลูกค้าชำระเงินแล้วสำเร็จ');
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'บันทึกการชำระเงินไม่สำเร็จ');
     },
   });
 
   const cancelOrder = useMutation({
     mutationFn: async () => {
       const res = await api.put(`/orders/${id}/cancel`, { reason: cancelReason });
-      return res;
+      return unwrapOrderResponse(res);
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['admin', 'order', id] });
-      queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['admin', 'order', id] }),
+        queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] }),
+        queryClient.invalidateQueries({ queryKey: ['orders'] }),
+      ]);
       toast.success('ยกเลิกคำสั่งซื้อสำเร็จ');
       setShowCancelModal(false);
+      setCancelReason('');
+    },
+    onError: (err) => {
+      toast.error(err.response?.data?.message || 'ยกเลิกคำสั่งซื้อไม่สำเร็จ');
     },
   });
 
@@ -73,18 +127,32 @@ export default function AdminOrderDetail() {
     return <div className="flex justify-center py-20"><Spinner size="lg" /></div>;
   }
 
-  if (!order) {
+  if (error || !order) {
     return <div className="text-center py-20 text-gray-500">ไม่พบคำสั่งซื้อ</div>;
   }
 
   const status = getOrderStatus(order.orderStatus);
 
-  // Valid next statuses
+  const paymentMethod = String(order.paymentMethod || '').toLowerCase();
+  const isCod = paymentMethod === 'cod';
+  const isOnlinePayment = ['credit_card', 'bank_transfer', 'promptpay'].includes(paymentMethod);
+
+  const canMarkPaid =
+    !order.isPaid &&
+    (
+      (isOnlinePayment && order.orderStatus === 'pending') ||
+      (isCod && order.orderStatus === 'shipped')
+    );
+
   const nextStatusMap = {
-    pending: [{ value: 'confirmed', label: 'ยืนยันคำสั่งซื้อ', color: 'bg-blue-600' }],
+    pending: (isCod || order.isPaid)
+      ? [{ value: 'confirmed', label: 'ยืนยันคำสั่งซื้อ', color: 'bg-blue-600' }]
+      : [],
     confirmed: [{ value: 'processing', label: 'เริ่มเตรียมสินค้า', color: 'bg-indigo-600' }],
-    processing: [{ value: 'shipped', label: 'จัดส่งแล้ว', color: 'bg-purple-600' }],
-    shipped: [{ value: 'delivered', label: 'ส่งถึงแล้ว', color: 'bg-green-600' }],
+    processing: [],
+    shipped: (!isCod || order.isPaid)
+      ? [{ value: 'delivered', label: 'ส่งถึงแล้ว', color: 'bg-green-600' }]
+      : [],
     delivered: [],
     cancelled: [],
   };
@@ -100,6 +168,20 @@ export default function AdminOrderDetail() {
     delivered: 'bg-green-100 text-green-800 border-green-300',
     cancelled: 'bg-red-100 text-red-800 border-red-300',
   };
+
+  const paymentStatusText =
+    order.orderStatus === 'cancelled'
+      ? 'ยกเลิก'
+      : order.isPaid
+        ? 'ชำระแล้ว'
+        : 'รอชำระ';
+
+  const paymentStatusClass =
+    order.orderStatus === 'cancelled'
+      ? 'text-red-600'
+      : order.isPaid
+        ? 'text-green-600'
+        : 'text-yellow-600';
 
   return (
     <div className="space-y-6 max-w-5xl">
@@ -120,10 +202,22 @@ export default function AdminOrderDetail() {
       </div>
 
       {/* Status Actions */}
-      {(nextStatuses.length > 0 || canCancel) && (
+      {(nextStatuses.length > 0 || canCancel || canMarkPaid || order.orderStatus === 'processing') && (
         <div className="bg-white rounded-xl shadow-sm p-6">
           <h3 className="font-bold text-gray-800 mb-4">อัปเดตสถานะ</h3>
+
           <div className="flex flex-wrap gap-3">
+            {canMarkPaid && (
+              <Button
+                onClick={() => updatePaid.mutate()}
+                isLoading={updatePaid.isPending}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              >
+                <CheckCircle className="w-4 h-4" />
+                ลูกค้าชำระเงินแล้ว
+              </Button>
+            )}
+
             {nextStatuses.map((next) => (
               <Button
                 key={next.value}
@@ -134,6 +228,7 @@ export default function AdminOrderDetail() {
                 {next.label}
               </Button>
             ))}
+
             {canCancel && (
               <Button variant="danger" onClick={() => setShowCancelModal(true)}>
                 <XCircle className="w-4 h-4" /> ยกเลิกคำสั่งซื้อ
@@ -141,7 +236,7 @@ export default function AdminOrderDetail() {
             )}
           </div>
 
-          {/* Tracking Number (show when processing) */}
+          {/* Tracking Number: processing -> shipped */}
           {order.orderStatus === 'processing' && (
             <div className="mt-4 flex gap-3">
               <Input
@@ -156,7 +251,7 @@ export default function AdminOrderDetail() {
                 isLoading={updateShipping.isPending}
                 leftIcon={<Send className="w-4 h-4" />}
               >
-                บันทึกเลขพัสดุ
+                บันทึกเลขพัสดุและจัดส่งแล้ว
               </Button>
             </div>
           )}
@@ -231,7 +326,7 @@ export default function AdminOrderDetail() {
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-gray-500">วิธีชำระเงิน</span>
-              <span className="font-medium">{order.paymentMethod}</span>
+              <span className="font-medium">{getPaymentMethodLabel(order.paymentMethod)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500">ราคาสินค้า</span>
@@ -248,8 +343,8 @@ export default function AdminOrderDetail() {
             </div>
             <div className="flex justify-between mt-2">
               <span className="text-gray-500">สถานะชำระเงิน</span>
-              <span className={`font-medium ${order.isPaid ? 'text-green-600' : 'text-yellow-600'}`}>
-                {order.isPaid ? `ชำระแล้ว` : 'รอชำระ'}
+              <span className={`font-medium ${paymentStatusClass}`}>
+                {paymentStatusText}
               </span>
             </div>
             {order.paidAt && (
@@ -273,9 +368,16 @@ export default function AdminOrderDetail() {
               placeholder="เหตุผลในการยกเลิก..."
             />
             <div className="flex gap-3 mt-4">
-              <Button variant="ghost" fullWidth onClick={() => setShowCancelModal(false)}>ไม่ยกเลิก</Button>
-              <Button variant="danger" fullWidth onClick={() => cancelOrder.mutate()}
-                isLoading={cancelOrder.isPending} disabled={!cancelReason.trim()}>
+              <Button variant="ghost" fullWidth onClick={() => setShowCancelModal(false)}>
+                ไม่ยกเลิก
+              </Button>
+              <Button
+                variant="danger"
+                fullWidth
+                onClick={() => cancelOrder.mutate()}
+                isLoading={cancelOrder.isPending}
+                disabled={!cancelReason.trim()}
+              >
                 ยืนยันยกเลิก
               </Button>
             </div>
@@ -285,4 +387,5 @@ export default function AdminOrderDetail() {
     </div>
   );
 }
+
 

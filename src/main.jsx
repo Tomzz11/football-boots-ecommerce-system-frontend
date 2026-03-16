@@ -9,12 +9,23 @@ import App from './App.jsx';
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,
-      retry: 1,
+      retry: (failureCount, error) => {
+        const status = error?.response?.status;
+
+        // ไม่ retry ถ้าโดน rate limit
+        if (status === 429) return false;
+
+        // retry error ทั่วไปได้นิดหน่อย
+        return failureCount < 1;
+      },
+      refetchOnWindowFocus: false,
+      staleTime: 30 * 1000,
+    },
+    mutations: {
+      retry: false,
     },
   },
 });
-
 
 ReactDOM.createRoot(document.getElementById('root')).render(
 <React.StrictMode>

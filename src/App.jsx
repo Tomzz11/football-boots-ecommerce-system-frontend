@@ -40,16 +40,6 @@ const TermsPage = lazy(() =>
   import('./pages/StaticPages').then(m => ({ default: m.TermsPage }))
 );
 
-// Placeholder component for pages not yet created
-function PlaceholderPage({ title }) {
-  return (
-    <div className="container-custom py-20 text-center">
-      <h1 className="text-3xl font-bold text-gray-800 mb-4">{title}</h1>
-      <p className="text-gray-500">หน้านี้กำลังอยู่ระหว่างการพัฒนา</p>
-    </div>
-  );
-}
-
 // 404 Page
 function NotFoundPage() {
   return (

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Star } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { cn, formatPrice, getProductImage, isInStock, getSizeRange } from '../../lib/utils';
+import { cn, formatPrice, getProductImage, isInStock } from '../../lib/utils';
 import GradeBadge from './GradeBadge';
 
 export default function ProductCard({ product, index = 0 }) {
@@ -22,7 +22,6 @@ export default function ProductCard({ product, index = 0 }) {
 
   const imageUrl = getProductImage(images);
   const inStock = isInStock(sizes);
-  const sizeRange = getSizeRange(sizes);
   const hasDiscount = comparePrice && comparePrice > price;
   const discountPercent = hasDiscount 
     ? Math.round(((comparePrice - price) / comparePrice) * 100)

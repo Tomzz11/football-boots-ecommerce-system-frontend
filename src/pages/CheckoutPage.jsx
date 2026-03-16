@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   MapPin, CreditCard, Truck, Shield, ChevronLeft,
@@ -12,30 +12,55 @@ import Input from '../components/ui/Input';
 import { formatPrice, getProductImage } from '../lib/utils';
 import { PROVINCES, PAYMENT_METHODS } from '../lib/constants';
 
+function buildShippingAddress(user, defaultAddress) {
+  return {
+    fullName: defaultAddress?.fullName || user?.name || '',
+    phone: defaultAddress?.phone || user?.phone || '',
+    address: defaultAddress?.address || '',
+    city: defaultAddress?.city || '',
+    postalCode: defaultAddress?.postalCode || '',
+  };
+}
+
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  const { items, getCartTotals, getCheckoutItems, clearCart } = useCartStore();
+  const { items, getCartTotals, getCheckoutItems } = useCartStore();
   const createOrder = useCreateOrder();
   const checkStock = useCheckStock();
 
   const { subtotal, shipping, total } = getCartTotals();
 
-  const [step, setStep] = useState(1); // 1: shipping, 2: payment, 3: review
+  const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [shippingAddress, setShippingAddress] = useState({
-    fullName: user?.name || '',
-    phone: user?.phone || '',
-    address: '',
-    city: '',
-    postalCode: '',
-  });
+  const defaultAddress = useMemo(() => {
+    return user?.addresses?.find((addr) => addr.isDefault) || user?.addresses?.[0] || null;
+  }, [user]);
+
+  const [shippingAddress, setShippingAddress] = useState(() =>
+    buildShippingAddress(user, defaultAddress)
+  );
 
   const [paymentMethod, setPaymentMethod] = useState('');
   const [errors, setErrors] = useState({});
 
-  // Redirect if cart is empty
+  useEffect(() => {
+    // auto-fill เฉพาะตอนที่ฟอร์มยังไม่มีที่อยู่จริง
+    setShippingAddress((prev) => {
+      const hasTypedAddress =
+        prev.address?.trim() || prev.city?.trim() || prev.postalCode?.trim();
+
+      if (hasTypedAddress) return prev;
+
+      return buildShippingAddress(user, defaultAddress);
+    });
+  }, [user, defaultAddress]);
+
+  const applyDefaultAddress = () => {
+    setShippingAddress(buildShippingAddress(user, defaultAddress));
+  };
+
   if (items.length === 0) {
     return (
       <div className="container-custom py-20 text-center">
@@ -84,10 +109,10 @@ export default function CheckoutPage() {
 
   const handlePlaceOrder = async () => {
     setIsSubmitting(true);
+
     try {
-      // Check stock before placing order
       const stockCheck = await checkStock.mutateAsync(
-        items.map(item => ({
+        items.map((item) => ({
           productId: item.product._id,
           size: item.size,
           quantity: item.quantity,
@@ -95,14 +120,13 @@ export default function CheckoutPage() {
       );
 
       if (!stockCheck.allAvailable) {
-        const unavailable = stockCheck.items.filter(i => !i.available);
-        const messages = unavailable.map(i => `${i.name}: ${i.reason}`).join('\n');
+        const unavailable = stockCheck.items.filter((i) => !i.available);
+        const messages = unavailable.map((i) => `${i.name}: ${i.reason}`).join('\n');
         alert(`สินค้าบางรายการไม่พร้อม:\n${messages}`);
         setIsSubmitting(false);
         return;
       }
 
-      // Create order
       const order = await createOrder.mutateAsync({
         orderItems: getCheckoutItems(),
         shippingAddress,
@@ -129,8 +153,10 @@ export default function CheckoutPage() {
       <div className="bg-white border-b">
         <div className="container-custom py-6">
           <div className="flex items-center gap-4">
-            <button onClick={() => step > 1 ? setStep(step - 1) : navigate(-1)}
-              className="p-2 hover:bg-gray-100 rounded-lg">
+            <button
+              onClick={() => (step > 1 ? setStep(step - 1) : navigate(-1))}
+              className="p-2 hover:bg-gray-100 rounded-lg"
+            >
               <ChevronLeft className="w-5 h-5" />
             </button>
             <h1 className="text-2xl font-display font-bold text-gray-800">ดำเนินการสั่งซื้อ</h1>
@@ -144,15 +170,21 @@ export default function CheckoutPage() {
               { num: 3, label: 'ยืนยันคำสั่งซื้อ' },
             ].map((s, i) => (
               <div key={s.num} className="flex items-center gap-2 flex-1">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
-                  ${step >= s.num ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'}`}>
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
+                  ${step >= s.num ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-500'}`}
+                >
                   {step > s.num ? <CheckCircle className="w-5 h-5" /> : s.num}
                 </div>
-                <span className={`text-sm font-medium hidden sm:block
-                  ${step >= s.num ? 'text-primary-600' : 'text-gray-400'}`}>
+                <span
+                  className={`text-sm font-medium hidden sm:block
+                  ${step >= s.num ? 'text-primary-600' : 'text-gray-400'}`}
+                >
                   {s.label}
                 </span>
-                {i < 2 && <div className={`flex-1 h-0.5 ${step > s.num ? 'bg-primary-600' : 'bg-gray-200'}`} />}
+                {i < 2 && (
+                  <div className={`flex-1 h-0.5 ${step > s.num ? 'bg-primary-600' : 'bg-gray-200'}`} />
+                )}
               </div>
             ))}
           </div>
@@ -166,10 +198,32 @@ export default function CheckoutPage() {
             {/* Step 1: Shipping Address */}
             {step === 1 && (
               <div className="bg-white rounded-xl shadow-sm p-6">
-                <div className="flex items-center gap-3 mb-6">
-                  <MapPin className="w-6 h-6 text-primary-600" />
-                  <h2 className="text-xl font-bold text-gray-800">ที่อยู่จัดส่ง</h2>
+                <div className="flex items-center justify-between gap-4 mb-6">
+                  <div className="flex items-center gap-3">
+                    <MapPin className="w-6 h-6 text-primary-600" />
+                    <h2 className="text-xl font-bold text-gray-800">ที่อยู่จัดส่ง</h2>
+                  </div>
+
+                  {defaultAddress && (
+                    <button
+                      type="button"
+                      onClick={applyDefaultAddress}
+                      className="text-sm text-primary-600 hover:underline"
+                    >
+                      ใช้ที่อยู่เริ่มต้นจากโปรไฟล์
+                    </button>
+                  )}
                 </div>
+
+                {defaultAddress && (
+                  <div className="mb-6 rounded-lg bg-primary-50 border border-primary-100 p-4 text-sm text-gray-700">
+                    <p className="font-medium text-primary-700 mb-1">ที่อยู่เริ่มต้นจากโปรไฟล์</p>
+                    <p>{defaultAddress.fullName}</p>
+                    <p>{defaultAddress.phone}</p>
+                    <p>{defaultAddress.address}</p>
+                    <p>{defaultAddress.city} {defaultAddress.postalCode}</p>
+                  </div>
+                )}
 
                 <div className="grid sm:grid-cols-2 gap-4">
                   <Input
@@ -184,7 +238,7 @@ export default function CheckoutPage() {
                     value={shippingAddress.phone}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, phone: e.target.value })}
                     error={errors.phone}
-                    placeholder="0812345678"
+                    placeholder="เช่น 0812345678"
                     required
                   />
                   <div className="sm:col-span-2">
@@ -193,7 +247,7 @@ export default function CheckoutPage() {
                       value={shippingAddress.address}
                       onChange={(e) => setShippingAddress({ ...shippingAddress, address: e.target.value })}
                       error={errors.address}
-                      placeholder="บ้านเลขที่ ซอย ถนน แขวง/ตำบล เขต/อำเภอ"
+                      placeholder="เช่น 999/99 ซอยสุขุมวิท 99 แขวงพระโขนง เขตคลองเตย"
                       required
                     />
                   </div>
@@ -219,7 +273,7 @@ export default function CheckoutPage() {
                     value={shippingAddress.postalCode}
                     onChange={(e) => setShippingAddress({ ...shippingAddress, postalCode: e.target.value })}
                     error={errors.postalCode}
-                    placeholder="10110"
+                    placeholder="เช่น 10110"
                     required
                   />
                 </div>
@@ -243,6 +297,7 @@ export default function CheckoutPage() {
                 <div className="space-y-3">
                   {PAYMENT_METHODS.map((method) => {
                     const Icon = paymentIcons[method.value] || CreditCard;
+
                     return (
                       <label
                         key={method.value}
@@ -265,6 +320,7 @@ export default function CheckoutPage() {
                     );
                   })}
                 </div>
+
                 {errors.paymentMethod && (
                   <p className="mt-3 text-sm text-red-500">{errors.paymentMethod}</p>
                 )}
@@ -312,7 +368,7 @@ export default function CheckoutPage() {
                     </button>
                   </div>
                   <p className="text-gray-600">
-                    {PAYMENT_METHODS.find(m => m.value === paymentMethod)?.label}
+                    {PAYMENT_METHODS.find((m) => m.value === paymentMethod)?.label}
                   </p>
                 </div>
 
@@ -321,8 +377,10 @@ export default function CheckoutPage() {
                   <h3 className="font-bold text-gray-800 mb-4">รายการสินค้า ({items.length} รายการ)</h3>
                   <div className="space-y-4">
                     {items.map((item) => (
-                      <div key={`${item.product._id}-${item.size}`}
-                        className="flex gap-4 pb-4 border-b last:border-0">
+                      <div
+                        key={`${item.product._id}-${item.size}`}
+                        className="flex gap-4 pb-4 border-b last:border-0"
+                      >
                         <img
                           src={getProductImage(item.product.images)}
                           alt={item.product.name}
@@ -363,7 +421,6 @@ export default function CheckoutPage() {
             <div className="bg-white rounded-xl shadow-sm p-6 sticky top-24">
               <h3 className="font-bold text-gray-800 mb-4">สรุปคำสั่งซื้อ</h3>
 
-              {/* Items preview */}
               <div className="space-y-3 mb-4">
                 {items.map((item) => (
                   <div key={`${item.product._id}-${item.size}`} className="flex items-center gap-3">
@@ -383,7 +440,6 @@ export default function CheckoutPage() {
 
               <hr className="my-4" />
 
-              {/* Totals */}
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-500">ราคาสินค้า</span>
@@ -402,7 +458,6 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* Trust badges */}
               <div className="mt-6 space-y-3 text-sm text-gray-500">
                 <div className="flex items-center gap-2">
                   <Shield className="w-4 h-4 text-primary-600" />
@@ -420,4 +475,5 @@ export default function CheckoutPage() {
     </div>
   );
 }
+
 
