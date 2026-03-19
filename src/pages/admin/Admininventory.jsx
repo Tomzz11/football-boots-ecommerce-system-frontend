@@ -479,3 +479,4 @@ function StockModal({ product, action, onClose }) {
     </div>
   );
 }
+
