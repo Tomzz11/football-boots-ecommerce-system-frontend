@@ -70,79 +70,47 @@ This frontend was built to support a backend-focused portfolio project while sti
 
 ## Project Structure
 
+```text
 football-boots-ecommerce-system-frontend/
-├── public/
-│ └── favicon.svg # static public asset
+├── public/                     # static public assets
 ├── src/
-│ ├── components/
-│ │ ├── auth/
-│ │ │ └── ProtectedRoute.jsx # route guard for authenticated / role-based pages
-│ │ ├── cart/
-│ │ │ └── CartDrawer.jsx # cart sidebar / drawer UI
-│ │ ├── layout/
-│ │ │ ├── Footer.jsx # footer component
-│ │ │ ├── Header.jsx # top navigation / header
-│ │ │ └── ScrollToTop.jsx # scroll reset on route change
-│ │ ├── product/
-│ │ │ ├── GradeBadge.jsx # badge for product grade display
-│ │ │ └── ProductCard.jsx # reusable product card component
-│ │ └── ui/
-│ │ ├── Button.jsx # reusable button component
-│ │ ├── Input.jsx # reusable input component
-│ │ └── Loading.jsx # loading / spinner UI
-│ │
-│ ├── hooks/
-│ │ ├── useOrders.js # custom hook for order-related logic / fetching
-│ │ └── useProducts.js # custom hook for product-related logic / fetching
-│ │
-│ ├── layouts/
-│ │ └── Layout.jsx # main app layout wrapper
-│ │
-│ ├── lib/
-│ │ ├── axios.js # Axios instance / API configuration
-│ │ ├── constants.js # shared constants
-│ │ └── utils.js # helper / utility functions
-│ │
-│ ├── pages/
-│ │ ├── admin/
-│ │ │ ├── AdminDashboard.jsx # admin dashboard page
-│ │ │ ├── AdminInventory.jsx # admin inventory management page
-│ │ │ ├── AdminLayout.jsx # admin layout / admin route wrapper
-│ │ │ ├── AdminOrderDetail.jsx # admin single order detail page
-│ │ │ ├── AdminOrders.jsx # admin order management page
-│ │ │ ├── AdminProductForm.jsx # create / edit product form page
-│ │ │ └── AdminProducts.jsx # admin product management page
-│ │ ├── auth/
-│ │ │ ├── LoginPage.jsx # login page
-│ │ │ └── RegisterPage.jsx # register page
-│ │ ├── CheckoutPage.jsx # checkout page
-│ │ ├── GradeShowcasePage.jsx # product grade showcase page
-│ │ ├── HomePage.jsx # landing / homepage
-│ │ ├── OrdersPage.jsx # user order history page
-│ │ ├── ProductDetailPage.jsx # single product detail page
-│ │ ├── ProductsPage.jsx # product listing page
-│ │ ├── ProfilePage.jsx # user profile page
-│ │ └── StaticPages.jsx # static informational pages
-│ │
-│ ├── stores/
-│ │ ├── authStore.js # Zustand store for authentication state
-│ │ └── cartStore.js # Zustand store for cart state
-│ │
-│ ├── App.jsx # app routes and top-level app composition
-│ ├── index.css # global styles
-│ └── main.jsx # application entry point
-│
-├── .env # local environment variables
-├── .env.example # example environment variables
-├── .gitignore
-├── eslint.config.js # ESLint configuration
-├── index.html # Vite HTML entry
-├── package-lock.json
+│   ├── components/             # reusable UI components
+│   │   ├── auth/
+│   │   ├── cart/
+│   │   ├── layout/
+│   │   ├── product/
+│   │   └── ui/
+│   ├── hooks/                  # custom React hooks
+│   ├── layouts/                # app-level layout wrappers
+│   ├── lib/                    # axios config, constants, utilities
+│   ├── pages/                  # route-level pages
+│   │   ├── admin/
+│   │   └── auth/
+│   ├── stores/                 # Zustand stores
+│   ├── App.jsx                 # app routes and top-level composition
+│   ├── index.css               # global styles
+│   └── main.jsx                # application entry point
+├── .env.example                # example environment variables
+├── eslint.config.js            # ESLint configuration
+├── index.html                  # Vite HTML entry
 ├── package.json
 ├── README.md
-├── tailwind.config.js # Tailwind CSS configuration
-├── vercel.json # Vercel deployment configuration
-└── vite.config.js # Vite configuration
+├── tailwind.config.js          # Tailwind CSS configuration
+├── vercel.json                 # Vercel deployment configuration
+└── vite.config.js              # Vite configuration
+```
+
+### Folder Overview
+
+- public: static assets served directly by the app
+- components: reusable UI components such as buttons, inputs, product cards, cart drawer, and protected route logic
+- hooks: custom React hooks for reusable logic related to products and orders
+- layouts: shared page layout wrappers
+- lib: shared utilities, constants, and Axios API configuration
+- pages: route-level pages for both user-facing pages and admin pages
+- stores: Zustand stores for global state such as authentication and cart
+- App.jsx: defines the app structure and routes
+- main.jsx: frontend entry point
 
 ## Important Pages
 
