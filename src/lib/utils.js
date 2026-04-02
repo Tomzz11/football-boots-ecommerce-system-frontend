@@ -141,12 +141,18 @@ export function debounce(func, wait = 300) {
  * @param {Array} images - Product images array
  * @returns {string} Image URL
  */
-export function getProductImage(images) {
+export function getProductImage(images, width = 600) {
   if (!images || images.length === 0) {
     return '/images/placeholder.jpg';
   }
   const primary = images.find(img => img.isPrimary);
-  return primary?.url || images[0]?.url || '/images/placeholder.jpg';
+  const url = primary?.url || images[0]?.url || '/images/placeholder.jpg';
+
+  // Cloudinary transformation to optimize
+  if (url.includes('res.cloudinary.com')) {
+    return url.replace('/upload/', `/upload/w_${width},f_auto,q_auto/`);
+  }
+  return url;
 }
 
 
